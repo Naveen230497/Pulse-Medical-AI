@@ -1,0 +1,620 @@
+2026-09-09 13:36:13,242 - INFO - Client connected to Voice WS
+2026-09-09 13:36:13,247 - INFO - Processing query: Hello, testing!
+2026-09-09 13:36:13,801 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-09 13:36:13,803 - ERROR - Cartesia streaming error: Error code: 404 - {'error': {'message': 'The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}}
+Traceback (most recent call last):
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\main.py", line 66, in stream_groq_to_cartesia
+    stream = await groq_client.chat.completions.create(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\site-packages\groq\resources\chat\completions.py", line 951, in create
+    return await self._post(
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\site-packages\groq\_base_client.py", line 1856, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\site-packages\groq\_base_client.py", line 1655, in request
+    raise self._make_status_error_from_response(err.response) from None
+groq.NotFoundError: Error code: 404 - {'error': {'message': 'The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}}
+2026-09-09 13:36:13,851 - INFO - Client disconnected
+2026-09-09 13:40:30,151 - INFO - Client connected to Voice WS
+2026-09-09 13:40:45,081 - INFO - Processing query: I need to know about a start
+2026-09-09 13:40:45,083 - INFO - Initiating Groq stream...
+2026-09-09 13:40:46,014 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-09 13:40:46,015 - ERROR - Cartesia streaming error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}
+Traceback (most recent call last):
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\main.py", line 67, in stream_groq_to_cartesia
+    stream = await groq_client.chat.completions.create(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\site-packages\groq\resources\chat\completions.py", line 951, in create
+    return await self._post(
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\site-packages\groq\_base_client.py", line 1856, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\site-packages\groq\_base_client.py", line 1655, in request
+    raise self._make_status_error_from_response(err.response) from None
+groq.BadRequestError: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}
+2026-09-09 13:49:40,307 - INFO - Client disconnected
+2026-09-09 13:57:38,880 - INFO - Client connected to Voice WS
+2026-09-09 13:58:16,580 - INFO - Client connected to Voice WS
+2026-09-09 13:58:28,050 - INFO - Processing query: status right now
+2026-09-09 13:58:28,051 - INFO - Attempting Groq stream with model: groq/compound
+2026-09-09 13:58:29,961 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-09 13:58:29,962 - INFO - Successfully connected to model: groq/compound
+2026-09-09 13:58:29,962 - INFO - Connecting to Cartesia WS...
+2026-09-09 13:58:30,494 - INFO - Connected to Cartesia WS.
+2026-09-09 13:58:30,558 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-09 13:58:30,577 - INFO - Cartesia sent 'done' flag.
+2026-09-09 13:58:30,579 - INFO - Pipeline finished successfully.
+2026-09-09 13:58:45,596 - INFO - Processing query: I need to know about AI startups
+2026-09-09 13:58:45,597 - INFO - Attempting Groq stream with model: groq/compound
+2026-09-09 13:58:46,726 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-09 13:58:46,726 - INFO - Successfully connected to model: groq/compound
+2026-09-09 13:58:46,726 - INFO - Connecting to Cartesia WS...
+2026-09-09 13:58:47,138 - INFO - Connected to Cartesia WS.
+2026-09-09 13:58:47,221 - INFO - Cartesia sent 'done' flag.
+2026-09-09 13:58:52,480 - ERROR - Cartesia streaming error: Request Entity Too Large
+Traceback (most recent call last):
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\main.py", line 175, in stream_groq_to_cartesia
+    await asyncio.gather(pump_tokens(), read_audio())
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\main.py", line 127, in pump_tokens
+    async for chunk in stream:
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\site-packages\groq\_streaming.py", line 151, in __aiter__
+    async for item in self._iterator:
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\site-packages\groq\_streaming.py", line 197, in __stream__
+    raise APIError(
+groq.APIError: Request Entity Too Large
+2026-09-09 14:04:15,418 - INFO - 1 change detected
+2026-09-09 14:06:20,535 - INFO - 1 change detected
+2026-09-09 14:06:20,591 - INFO - Client disconnected
+2026-09-09 14:06:20,592 - INFO - Client disconnected
+2026-09-09 14:06:21,379 - INFO - 1 change detected
+2026-09-09 14:06:21,738 - INFO - 5 changes detected
+2026-09-09 14:08:19,315 - INFO - Client connected to Voice WS
+2026-09-09 14:08:32,983 - INFO - Processing query: I need to know about recent startups
+2026-09-09 14:08:32,984 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-09 14:08:33,758 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-09 14:08:33,758 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-09 14:08:33,758 - INFO - Connecting to Cartesia WS...
+2026-09-09 14:08:34,417 - INFO - Connected to Cartesia WS.
+2026-09-09 14:08:34,479 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-09 14:08:34,491 - INFO - Cartesia sent 'done' flag.
+2026-09-09 14:08:34,491 - INFO - Pipeline finished successfully.
+2026-09-09 14:15:00,028 - INFO - 1 change detected
+2026-09-09 14:15:00,087 - INFO - Client disconnected
+2026-09-09 14:15:00,846 - INFO - 1 change detected
+2026-09-09 14:15:01,209 - INFO - 5 changes detected
+2026-09-09 15:08:21,250 - INFO - Client connected to Voice WS
+2026-09-09 15:25:48,577 - INFO - Client disconnected
+2026-09-10 16:29:05,816 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-2' coro=<AsyncClient.aclose() done, defined at C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\venv\Lib\site-packages\httpx\_client.py:1978> exception=AttributeError("'AsyncHttpxClientWrapper' object has no attribute '_state'")>
+Traceback (most recent call last):
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\venv\Lib\site-packages\httpx\_client.py", line 1982, in aclose
+    if self._state != ClientState.CLOSED:
+       ^^^^^^^^^^^
+AttributeError: 'AsyncHttpxClientWrapper' object has no attribute '_state'
+2026-09-10 16:34:09,807 - INFO - Client connected to Voice WS
+2026-09-10 16:34:22,274 - INFO - Processing query: you know about
+2026-09-10 16:34:22,275 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:22,492 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:22,493 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:23,005 - INFO - Processing query: you know about
+2026-09-10 16:34:23,006 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:23,468 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:34:23,468 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:34:23,468 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:34:23,931 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:24,089 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:24,090 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:25,005 - INFO - Processing query: you know about   itching tablets
+2026-09-10 16:34:25,006 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:25,508 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:34:25,509 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:34:25,509 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:34:25,829 - INFO - Connected to Cartesia WS.
+2026-09-10 16:34:25,883 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:34:25,903 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:34:25,903 - INFO - Pipeline finished successfully.
+2026-09-10 16:34:26,522 - INFO - Processing query: itching tablets
+2026-09-10 16:34:26,522 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:26,993 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:34:26,994 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:34:26,994 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:34:27,297 - INFO - Connected to Cartesia WS.
+2026-09-10 16:34:27,426 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:34:27,428 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:34:27,430 - INFO - Pipeline finished successfully.
+2026-09-10 16:34:39,364 - INFO - Processing query: I need to know about
+2026-09-10 16:34:39,365 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:39,397 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:39,399 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:39,914 - INFO - Processing query: I need to know about
+2026-09-10 16:34:39,914 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:40,660 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:34:40,661 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:34:40,661 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:34:40,936 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:40,993 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:42,039 - INFO - Processing query: I need to know about   PP tablets
+2026-09-10 16:34:42,041 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:42,751 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:34:42,751 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:34:42,751 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:34:43,261 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:43,306 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:43,306 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:43,991 - INFO - Processing query: PP tablets   PPP
+2026-09-10 16:34:43,991 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:44,272 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:44,275 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:44,791 - INFO - Processing query: PPP
+2026-09-10 16:34:44,792 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:45,382 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:34:45,382 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:34:45,382 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:34:45,488 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:45,493 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:46,007 - INFO - Processing query: PPP bro
+2026-09-10 16:34:46,008 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:46,073 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:46,074 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:46,589 - INFO - Processing query: PPP bro
+2026-09-10 16:34:46,589 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:46,774 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:46,778 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:47,288 - INFO - Processing query: PPP bro baby
+2026-09-10 16:34:47,289 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:47,818 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:34:47,820 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:34:48,340 - INFO - Processing query: PPP bro
+2026-09-10 16:34:48,341 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:49,160 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:34:49,161 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:34:49,161 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:34:49,685 - INFO - Connected to Cartesia WS.
+2026-09-10 16:34:49,706 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:34:49,780 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:34:49,780 - INFO - Pipeline finished successfully.
+2026-09-10 16:34:52,057 - INFO - Processing query: PPP bro
+2026-09-10 16:34:52,057 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:34:52,696 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:34:52,696 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:34:52,696 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:34:53,117 - INFO - Connected to Cartesia WS.
+2026-09-10 16:34:53,244 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:34:53,247 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:34:53,247 - INFO - Pipeline finished successfully.
+2026-09-10 16:35:02,407 - INFO - Processing query: can you do tell me
+2026-09-10 16:35:02,409 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:35:02,911 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:35:02,911 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:35:02,911 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:35:03,292 - INFO - Connected to Cartesia WS.
+2026-09-10 16:35:03,369 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:35:03,389 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:35:03,389 - INFO - Pipeline finished successfully.
+2026-09-10 16:35:04,124 - INFO - Processing query: can you do tell me
+2026-09-10 16:35:04,125 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:35:04,677 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:35:04,677 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:35:04,677 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:35:05,067 - INFO - Connected to Cartesia WS.
+2026-09-10 16:35:05,123 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:35:05,159 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:35:05,159 - INFO - Pipeline finished successfully.
+2026-09-10 16:35:12,048 - INFO - Processing query: no
+2026-09-10 16:35:12,048 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:35:12,622 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:35:12,622 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:35:12,622 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:35:13,048 - INFO - Connected to Cartesia WS.
+2026-09-10 16:35:13,087 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:35:13,145 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:35:13,145 - INFO - Pipeline finished successfully.
+2026-09-10 16:35:13,872 - INFO - Processing query: no
+2026-09-10 16:35:13,873 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:35:14,542 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:35:14,542 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:35:14,542 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:35:14,995 - INFO - Connected to Cartesia WS.
+2026-09-10 16:35:15,037 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:35:15,190 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:35:15,190 - INFO - Pipeline finished successfully.
+2026-09-10 16:35:18,798 - INFO - Processing query: worry uncle
+2026-09-10 16:35:18,799 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:35:19,400 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:35:19,401 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:35:19,401 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:35:19,994 - INFO - Connected to Cartesia WS.
+2026-09-10 16:35:20,059 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:35:20,143 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:35:20,143 - INFO - Pipeline finished successfully.
+2026-09-10 16:35:20,771 - INFO - Processing query: worry uncle
+2026-09-10 16:35:20,771 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:35:21,202 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:35:21,202 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:35:21,202 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:35:21,801 - INFO - Connected to Cartesia WS.
+2026-09-10 16:35:21,880 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:35:21,953 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:35:21,953 - INFO - Pipeline finished successfully.
+2026-09-10 16:35:23,231 - INFO - Client disconnected
+2026-09-10 16:54:53,478 - INFO - Client connected to Voice WS
+2026-09-10 16:58:40,390 - INFO - Processing query: Patna
+2026-09-10 16:58:40,392 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:58:42,313 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:58:42,314 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:58:42,347 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:58:43,574 - INFO - Processing query: what is the
+2026-09-10 16:58:43,575 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:58:44,600 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:58:44,601 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:58:46,874 - INFO - Processing query: what is the paediatric dose for
+2026-09-10 16:58:46,875 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:58:48,327 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:58:48,328 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:58:49,610 - INFO - Processing query: what is the paediatric dose for what
+2026-09-10 16:58:49,611 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:58:50,040 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:58:50,041 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:58:51,322 - INFO - Processing query: what is the paediatric dose for what is the
+2026-09-10 16:58:51,323 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:58:51,629 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:58:51,629 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:58:53,057 - INFO - Processing query: what is the paediatric dose for what is the
+2026-09-10 16:58:53,058 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:58:54,271 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:58:54,272 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:58:54,309 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:58:55,540 - INFO - Processing query: what is the paediatric dose for what is the periad transfer
+2026-09-10 16:58:55,541 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:59:00,142 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:59:00,144 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:59:00,144 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:59:05,111 - INFO - Connected to Cartesia WS.
+2026-09-10 16:59:05,179 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:59:06,327 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:59:06,327 - INFO - Pipeline finished successfully.
+2026-09-10 16:59:06,519 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:59:06,547 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:59:06,547 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:59:07,877 - INFO - Processing query: what is the paediatric dose for what is the periad transfer   what is the period
+2026-09-10 16:59:07,877 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:59:09,486 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 16:59:09,487 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 16:59:10,717 - INFO - Processing query: what is the periodic
+2026-09-10 16:59:10,719 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:59:17,262 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:59:17,262 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:59:17,262 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:59:19,037 - INFO - Connected to Cartesia WS.
+2026-09-10 16:59:19,052 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:59:19,600 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:59:19,600 - INFO - Pipeline finished successfully.
+2026-09-10 16:59:34,678 - INFO - Processing query: that
+2026-09-10 16:59:34,678 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 16:59:38,070 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 16:59:38,070 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 16:59:38,070 - INFO - Connecting to Cartesia WS...
+2026-09-10 16:59:41,702 - INFO - Connected to Cartesia WS.
+2026-09-10 16:59:41,711 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 16:59:44,531 - INFO - Cartesia sent 'done' flag.
+2026-09-10 16:59:44,531 - INFO - Pipeline finished successfully.
+2026-09-10 17:14:38,922 - INFO - Client disconnected
+2026-09-10 17:14:40,695 - INFO - Client connected to Voice WS
+2026-09-10 17:14:54,760 - INFO - Processing query: PNT a n y l doors
+2026-09-10 17:14:54,761 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 17:14:59,912 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 17:14:59,913 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 17:14:59,913 - INFO - Connecting to Cartesia WS...
+2026-09-10 17:15:05,681 - INFO - Connected to Cartesia WS.
+2026-09-10 17:15:05,722 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 17:15:07,273 - INFO - Cartesia sent 'done' flag.
+2026-09-10 17:15:07,273 - INFO - Pipeline finished successfully.
+2026-09-10 17:15:12,370 - INFO - Processing query: f e n t a n
+2026-09-10 17:15:12,370 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 17:15:12,706 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 17:15:12,706 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 17:15:14,671 - INFO - Processing query: f e n t a n y s
+2026-09-10 17:15:14,671 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 17:15:17,906 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 17:15:17,907 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 17:15:17,907 - INFO - Connecting to Cartesia WS...
+2026-09-10 17:15:22,635 - INFO - Connected to Cartesia WS.
+2026-09-10 17:15:22,689 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 17:15:23,713 - INFO - Cartesia sent 'done' flag.
+2026-09-10 17:15:23,714 - INFO - Pipeline finished successfully.
+2026-09-10 17:15:26,846 - INFO - Processing query: f e n t a n y s
+2026-09-10 17:15:26,846 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 17:15:31,791 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 17:15:31,792 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 17:15:31,792 - INFO - Connecting to Cartesia WS...
+2026-09-10 17:15:35,365 - INFO - Connected to Cartesia WS.
+2026-09-10 17:15:35,418 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 17:15:35,471 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 17:15:35,504 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 17:15:36,582 - INFO - Interrupt received. Cancelling active stream...
+2026-09-10 17:15:36,582 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-10 17:15:38,253 - INFO - Processing query: what are the warnings
+2026-09-10 17:15:38,254 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 17:15:44,189 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 17:15:44,189 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 17:15:44,189 - INFO - Connecting to Cartesia WS...
+2026-09-10 17:15:47,646 - INFO - Connected to Cartesia WS.
+2026-09-10 17:15:47,722 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 17:15:49,118 - INFO - Cartesia sent 'done' flag.
+2026-09-10 17:15:49,119 - INFO - Pipeline finished successfully.
+2026-09-10 17:15:55,377 - INFO - Processing query: bro
+2026-09-10 17:15:55,378 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 17:16:02,170 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 17:16:02,171 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 17:16:02,171 - INFO - Connecting to Cartesia WS...
+2026-09-10 17:16:09,087 - INFO - Connected to Cartesia WS.
+2026-09-10 17:16:09,100 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 17:16:11,027 - INFO - Cartesia sent 'done' flag.
+2026-09-10 17:16:11,027 - INFO - Pipeline finished successfully.
+2026-09-10 17:16:14,032 - INFO - Processing query: bro
+2026-09-10 17:16:14,033 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-10 17:16:19,807 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 17:16:19,807 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-10 17:16:19,807 - INFO - Connecting to Cartesia WS...
+2026-09-10 17:16:21,654 - INFO - Connected to Cartesia WS.
+2026-09-10 17:16:21,669 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-10 17:16:22,716 - INFO - Cartesia sent 'done' flag.
+2026-09-10 17:16:22,716 - INFO - Pipeline finished successfully.
+2026-09-10 17:21:20,142 - INFO - Client disconnected
+2026-09-11 09:36:10,939 - INFO - Client connected to Voice WS
+2026-09-11 09:41:29,636 - INFO - Processing query: Fanta
+2026-09-11 09:41:29,637 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:41:34,740 - INFO - Retrying request to /openai/v1/chat/completions in 0.924111 seconds
+2026-09-11 09:41:36,558 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:41:36,559 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-11 09:41:38,253 - INFO - Processing query: fan tunnel those
+2026-09-11 09:41:38,254 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:41:38,791 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:41:38,791 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:41:38,791 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:41:39,295 - INFO - Connected to Cartesia WS.
+2026-09-11 09:41:39,362 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:41:39,362 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:41:39,363 - INFO - Pipeline finished successfully.
+2026-09-11 09:41:49,852 - INFO - Processing query: fun tunnel
+2026-09-11 09:41:49,852 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:41:50,961 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:41:50,962 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-11 09:41:57,048 - INFO - Processing query: f e n t a n y l those
+2026-09-11 09:41:57,048 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:41:57,126 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:41:57,132 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:41:57,133 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-11 09:41:59,854 - INFO - Processing query: d o s e doors
+2026-09-11 09:41:59,854 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:00,392 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:42:00,394 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-11 09:42:01,787 - INFO - Processing query: f e n
+2026-09-11 09:42:01,788 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:01,910 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:42:01,912 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-11 09:42:03,363 - INFO - Processing query: f e n t a n
+2026-09-11 09:42:03,364 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:03,929 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:03,929 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:03,929 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:04,319 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:42:04,376 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-11 09:42:06,945 - INFO - Processing query: f e n t a n no no f e n
+2026-09-11 09:42:06,945 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:07,055 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:42:07,056 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-11 09:42:09,533 - INFO - Processing query: f e n t a n no no f e n remove those
+2026-09-11 09:42:09,533 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:10,536 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:10,536 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:10,536 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:11,551 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:11,626 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:11,880 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:42:11,881 - INFO - Pipeline finished successfully.
+2026-09-11 09:42:14,089 - INFO - Processing query: fen
+2026-09-11 09:42:14,090 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:14,661 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:14,662 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:14,662 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:14,992 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:15,084 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:15,095 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:42:15,095 - INFO - Pipeline finished successfully.
+2026-09-11 09:42:16,433 - INFO - Processing query: fen
+2026-09-11 09:42:16,434 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:16,896 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:16,896 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:16,896 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:17,245 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:17,333 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:17,333 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:42:17,334 - INFO - Pipeline finished successfully.
+2026-09-11 09:42:19,473 - INFO - Processing query: yl
+2026-09-11 09:42:19,474 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:19,933 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:19,933 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:19,933 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:20,262 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:20,285 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:20,365 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:42:20,365 - INFO - Pipeline finished successfully.
+2026-09-11 09:42:22,904 - INFO - Processing query: yl
+2026-09-11 09:42:22,905 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:23,464 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:23,464 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:23,464 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:23,773 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:23,805 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:23,862 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:42:23,862 - INFO - Pipeline finished successfully.
+2026-09-11 09:42:32,123 - INFO - Processing query: Fe
+2026-09-11 09:42:32,124 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:32,626 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:32,627 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:32,627 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:32,910 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:32,959 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:32,979 - INFO - Interrupt received. Cancelling active stream...
+2026-09-11 09:42:33,055 - WARNING - Task was interrupted by the user (Barge-in).
+2026-09-11 09:42:35,639 - INFO - Processing query: f e n t a n y l
+2026-09-11 09:42:35,640 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:36,456 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:36,456 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:36,457 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:36,746 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:36,815 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:42:37,177 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:37,178 - INFO - Pipeline finished successfully.
+2026-09-11 09:42:40,190 - INFO - Processing query: Max
+2026-09-11 09:42:40,190 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:40,637 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:40,637 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:40,637 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:41,090 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:41,118 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:41,180 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:42:41,180 - INFO - Pipeline finished successfully.
+2026-09-11 09:42:46,258 - INFO - Processing query: what are the warnings
+2026-09-11 09:42:46,260 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:46,734 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:46,734 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:46,734 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:42:47,051 - INFO - Connected to Cartesia WS.
+2026-09-11 09:42:47,088 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:42:47,112 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:42:47,114 - INFO - Pipeline finished successfully.
+2026-09-11 09:42:59,033 - INFO - Processing query: tell me the protocol
+2026-09-11 09:42:59,034 - INFO - Attempting Groq stream with model: qwen/qwen3.8-27b
+2026-09-11 09:42:59,847 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 09:42:59,847 - INFO - Successfully connected to model: qwen/qwen3.8-27b
+2026-09-11 09:42:59,847 - INFO - Connecting to Cartesia WS...
+2026-09-11 09:43:00,157 - INFO - Connected to Cartesia WS.
+2026-09-11 09:43:00,280 - INFO - Finished pumping Groq tokens to Cartesia.
+2026-09-11 09:43:00,281 - INFO - Cartesia sent 'done' flag.
+2026-09-11 09:43:00,281 - INFO - Pipeline finished successfully.
+2026-09-12 16:32:17,513 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 16:38:54,074 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 16:38:56,213 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 16:45:31,233 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:31,878 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:32,182 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:33,106 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:33,238 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:33,355 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:34,659 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:34,836 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:34,975 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:35,948 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:36,065 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:36,187 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:48,031 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:48,135 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:48,250 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:50,246 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:50,392 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:50,562 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:51,499 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:51,624 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:51,793 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:56,601 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:56,804 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:56,992 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:59,279 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:45:59,378 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:45:59,470 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:46:00,368 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:46:00,464 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:46:00,558 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:10,930 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:47:14,850 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:16,641 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:19,375 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:47:20,858 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:22,368 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:30,747 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:47:34,951 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:36,913 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:39,138 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:47:41,362 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:44,399 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:47:47,923 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:47:53,556 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:48:06,187 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:48:07,688 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:51:10,341 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:51:10,518 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:51:10,672 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:51:13,692 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:51:13,767 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:51:13,885 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:51:15,132 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:51:15,235 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:51:15,750 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:51:33,738 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:51:33,825 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:51:33,907 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:55:58,496 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:55:58,636 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:55:58,787 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:56:01,820 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:56:01,982 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:56:02,200 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:56:03,137 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:56:03,251 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:56:03,383 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:56:19,349 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 16:56:19,433 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 16:56:19,536 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:04:30,995 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 17:04:31,147 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:04:31,326 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:04:32,333 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 17:04:32,495 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:04:32,665 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:08:50,221 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 17:08:53,510 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 17:08:58,269 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 17:08:59,259 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-09-12 17:22:08,640 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:22:09,674 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:40:00,476 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:40:03,471 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:40:05,395 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-09-12 17:45:22,464 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 17:45:36,469 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 17:45:39,261 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 17:45:45,976 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 17:46:04,307 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 17:46:06,536 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 17:54:28,550 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 17:54:31,022 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 18:25:55,426 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 18:25:57,402 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 18:26:00,747 - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-12 18:26:07,075 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-251' coro=<websocket_endpoint.<locals>.run_stream() done, defined at C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\main.py:178> exception=RuntimeError("Unexpected ASGI message 'websocket.send', after sending 'websocket.close' or response already completed.")>
+Traceback (most recent call last):
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\main.py", line 180, in run_stream
+  File "C:\Users\ASUS\AppData\Local\Programs\Python\Python311\Lib\asyncio\tasks.py", line 466, in wait_for
+    await waiter
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\main.py", line 186, in run_stream
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\venv\Lib\site-packages\starlette\websockets.py", line 169, in send_text
+    await self.send({"type": "websocket.send", "text": data})
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\venv\Lib\site-packages\starlette\websockets.py", line 88, in send
+    await self._send(message)
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 50, in sender
+    await send(message)
+  File "C:\Users\ASUS\.gemini\antigravity\scratch\pulse-voice-agent\backend\venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 359, in asgi_send
+    raise RuntimeError(msg % message_type)
+RuntimeError: Unexpected ASGI message 'websocket.send', after sending 'websocket.close' or response already completed.
