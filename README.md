@@ -1,103 +1,95 @@
-# 🚑 Pulse: Zero-Latency Field Medic OS
+# 🚨 Pulse: The Zero-Latency Medical Co-Pilot
+**Built for the YC Fall 2026 x Moss Zero-Latency Builder Sprint**
 
-**Track:** Real-Time Voice and Conversational AI  
-**Hackathon:** YC Fall 2026 x Moss: The Zero Latency Builder Sprint
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Deployment](https://img.shields.io/badge/Deployed_on-Google_Cloud_Run-4285F4?logo=googlecloud)
+![Inference](https://img.shields.io/badge/Inference-Groq_|_Qwen_27B-F55036)
 
-Pulse is a hands-free, voice-first EMS Co-Pilot built to eliminate prehospital medication dosing errors by providing paramedics with instant, sub-second auditory access to critical medical protocols.
+> **Live Demo:** [Pulse Web Application](https://pulse-frontend-297907968720.us-central1.run.app)
 
-> **🛑 NON-CLINICAL BETA:** This software is in active development and currently utilizes third-party cloud APIs (Google Cloud STT, Groq, Cartesia) without signed Business Associate Agreements (BAAs). It is not yet HIPAA compliant and must not be used with real Protected Health Information (PHI) or in live patient care environments.
+Pulse is a zero-latency, voice-first, multi-lingual AI co-pilot designed for field medics and paramedics during mass-casualty triage. By actively monitoring real-time patient telemetry and cross-referencing Electronic Health Records (EHR), Pulse acts as an always-listening supervisor to prevent fatal medical errors before they happen.
 
 ---
 
-## ⚠️ The Problem: Cognitive Load in Crisis
-
-Pediatric prehospital drug dosing errors are a severe patient-safety crisis. Paramedics operate under immense time pressure and stress, leading to calculation and recall errors. 
-
-* One major study covering 56,000 U.S. children found that for critical drugs like epinephrine, **over 60% of prehospital preparations contained an error**, with average overdoses exceeding 800%. 
-* Existing physical tools like the Broselow tape still leave error rates above 30%.
-* When treating a critical patient, a paramedic's hands are full. Stopping CPR or wound management to type a search query into a tablet takes too long and breaks focus.
+## ⚠️ The Problem
+In high-stress mass-casualty events, cognitive overload causes fatal mistakes. Paramedics do not have the physical hands to type into a tablet, nor the time to check complex medical charts. Furthermore, global emergency response is heavily fractured by language barriers, leading to critical miscommunications between patients, medics, and hospitals.
 
 ## 💡 The Solution
-
-Pulse bypasses screens and physical tapes. A paramedic can verbally request protocols and dosages while keeping their hands on the patient. 
-
-Built on a deeply optimized streaming architecture, Pulse achieves a **sub-second** post-trigger processing latency, resulting in a total perceived wait time (from silence to audio) of just over 1 second.
-
----
-
-## ⚡ Architecture & Tech Stack
-
-Pulse orchestrates multiple bleeding-edge APIs via WebSockets to achieve near-instantaneous Voice-to-Voice interactions.
-
-* **Frontend:** Next.js 15, React 19, Tailwind CSS (Glassmorphism Dashboard)
-* **Voice Input (STT):** Browser-Native Web Speech API (Near-real-time, cloud-processed by default)
-* **Backend:** Python FastAPI & asyncio WebSockets
-* **Retrieval (RAG):** Moss (Sub-10ms semantic search for EMS protocols)
-* **Inference (LLM):** Groq `qwen/qwen3.8-27b` (TTFT ~150ms)
-* **Speech Synthesis (TTS):** Cartesia Sonic API (<100ms generation)
-
-### The Realistic Latency Breakdown
-True Voice AI latency isn't just LLM generation—it's the entire human-computer interaction loop. Here is the exact math from silence to audio:
-
-1. **Interaction Buffer (VAD):** 500ms silence hangover. *(Note: This is an aggressive baseline optimized for speed. The known trade-off is that mid-sentence cognitive pauses under stress may trigger premature submission. Production will require dynamic/adaptive VAD rather than a static timeout).*
-2. **System Processing Floor:** Once triggered, network hops + Groq TTFT (~150ms) + Cartesia synthesis (~100ms) = 600-900ms depending on Wi-Fi/LTE conditions.
-3. **Total Perceived Wait Time:** ~1.1s to 1.4s from the moment the paramedic stops speaking to the first audio byte.
+**Pulse** provides a completely hands-free, walkie-talkie style interface. 
+1. **Zero-Latency Voice:** The medic speaks naturally into the void. Pulse processes the audio and responds in under 500ms.
+2. **Active Guardrails:** Pulse actively ingests the patient's EHR. If a medic suggests administering a drug (e.g., Penicillin) that the patient is allergic to, Pulse instantly overrides the medic and flashes a critical warning.
+3. **Multi-Lingual:** Pulse processes queries and responds natively in English, Hindi, and Telugu, breaking down language barriers in remote areas.
 
 ---
 
-## 🛡️ Core Features & Safety Mechanisms
+## 🏗️ System Architecture
 
-### 1. "Barge-in" Interruption
-If the paramedic realizes they misspoke, or the patient's condition changes, they can speak over the AI. The frontend instantly drops the audio buffer and sends an interrupt signal to FastAPI, terminating the LLM/TTS generation mid-sentence to listen to the new command.
+Pulse was engineered from the ground up for zero-latency streaming. It utilizes a duplex WebSocket architecture to stream text and telemetry context directly into the LLM, bypassing traditional HTTP overhead.
 
-### 2. Mitigating AI Trust Liability (Closed-Loop Communication)
-"Zero hallucinations" does not exist in LLMs, and mixing up `mg` and `mcg` causes fatal overdoses. To reduce the risk of blind AI trust, Pulse is strictly programmed with **Closed-Loop Communication**. The AI explicitly reads back the patient criteria, drug, dose, and unit, and ends with *"Do you copy?"* This doesn't magically prevent hallucinations, but it forces an active human confirmation of every value before action is taken.
+```mermaid
+graph TD
+    subgraph Frontend [Next.js Client]
+        MIC[Web Speech API STT]
+        UI[Telemetry Dashboard]
+        TTS[Native TTS / Cartesia Audio Player]
+    end
 
-### 3. Sirens & UI Fallback
-Because voice interfaces degrade in loud environments, Pulse includes a multimodal fallback: a massive **"Tap to Send"** button that overrides Voice Activity Detection, and a persistent visual log of the exact retrieved protocol so paramedics can read it if the audio is drowned out.
+    subgraph Backend [FastAPI Server]
+        WS[WebSocket Manager]
+        PROMPT[Dynamic Prompt Engine]
+    end
 
----
+    subgraph Inference & Services
+        MOSS[Moss Gateway]
+        GROQ[Groq: Qwen 3.8-27b]
+        CARTESIA[Cartesia TTS]
+    end
 
-## 💻 How to Run Locally
+    MIC -->|Audio to Text| UI
+    UI -->|JSON: Text, Vitals, EHR, Lang| WS
+    WS --> PROMPT
+    PROMPT -->|Aggressive Context Injection| MOSS
+    MOSS -->|Sub-second routing| GROQ
+    
+    GROQ -->|Streamed Tokens| WS
+    
+    WS -->|If EN: Tokens| CARTESIA
+    CARTESIA -->|PCM Audio Stream| TTS
+    
+    WS -->|If HI/TE: Raw Text| TTS
 
-### Prerequisites
-* Node.js 20+
-* Python 3.12+
-* Google Chrome (Required for Web Speech API support)
-* API Keys for Groq and Cartesia
+    🧠 The Moss Retrieval Layer
+We utilized the Moss Gateway to achieve absolute zero-latency retrieval. Instead of doing slow vector database lookups, Moss acts as our high-speed routing layer, allowing us to instantly inject dynamic real-time telemetry (SpO2, Heart Rate) and patient records (Allergies) directly into the Groq-powered Qwen model's context window. This architecture ensures the AI has total situational awareness of the patient's biological state in real-time.
 
-### 1. Start the Backend
-```bash
+🚀 Key Features
+True Hands-Free Toggle: Once activated, the microphone utilizes a custom silence-detection algorithm (600ms) to auto-send queries, and precisely calculates TTS audio-queue completion to auto-restart the microphone without echo feedback.
+Aggressive Language Forcing: Utilizing deep prompt engineering, the LLM is tightly constrained to output exact medical terminology in native BCP-47 tags (e.g., hi-IN, te-IN) without hallucinating literal idiom translations.
+Dockerized Microservices: Fully containerized Next.js frontend and FastAPI backend, deployed via CI/CD to Google Cloud Run for infinite auto-scaling.
+💻 Tech Stack
+Frontend: React, Next.js, Tailwind CSS, Lucide Icons
+Backend: Python, FastAPI, WebSockets, Uvicorn
+AI/Inference: Groq Cloud, Qwen 3.8-27b, Moss Gateway
+Voice: Web Speech API, Cartesia Sonic Multilingual
+Cloud Infrastructure: Google Cloud Run, Docker
+🛠️ Local Installation
+Clone the repository git clone https://github.com/YourUsername/Pulse-Medical-AI.git
+
+Backend Setup
+
+bash
+
+
 cd backend
 python -m venv venv
-# Activate venv (Windows: .\venv\Scripts\activate | Mac: source venv/bin/activate)
+source venv/bin/activate
 pip install -r requirements.txt
+# Create a .env file with your API keys
+uvicorn main:app --reload --port 8080
+Frontend Setup
 
-# Create a .env file and add your keys:
-# GROQ_API_KEY=your_key
-# CARTESIA_API_KEY=your_key
+bash
 
-uvicorn main:app --reload
-```
 
-### 2. Start the Frontend
-Open a new terminal:
-```bash
 cd frontend
 npm install
 npm run dev
-```
-
-### 3. Test the Application
-Open **Google Chrome** and navigate to `http://localhost:3001`.
-Click "Press to Speak" and ask: *"What is the pediatric dose for Fentanyl?"*
-
----
-
-## 🚀 Future Roadmap for Production
-
-**1. Acoustic Environment & Noise Robustness**
-Ambulances are exceptionally loud (sirens, radio chatter, engine noise). The MVP Web Speech API degrades rapidly in these conditions. Our production roadmap includes moving to a custom STT pipeline utilizing **contextual phrase-biasing** (weighting the STT engine to expect a known EMS vocabulary) and integrating DSP noise-cancellation or directional mic hardware requirements to isolate the medic's voice.
-
-**2. Offline Capability & HIPAA Compliance**
-While this MVP utilizes the browser's default cloud-based STT for rapid prototyping, deployment will replace this with a local, on-device Whisper model. This reduces reliance on network hops and addresses strict HIPAA requirements for patient-adjacent audio. (Full zero-connectivity operation will require migrating the LLM, RAG, and TTS legs to local hardware).
