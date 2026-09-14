@@ -57,39 +57,50 @@ graph TD
     CARTESIA -->|PCM Audio Stream| TTS
     
     WS -->|If HI/TE: Raw Text| TTS
+```
 
-    🧠 The Moss Retrieval Layer
-We utilized the Moss Gateway to achieve absolute zero-latency retrieval. Instead of doing slow vector database lookups, Moss acts as our high-speed routing layer, allowing us to instantly inject dynamic real-time telemetry (SpO2, Heart Rate) and patient records (Allergies) directly into the Groq-powered Qwen model's context window. This architecture ensures the AI has total situational awareness of the patient's biological state in real-time.
+### 🧠 The Moss Retrieval Layer
+We utilized the **Moss Gateway** to achieve absolute zero-latency retrieval. Instead of doing slow vector database lookups, Moss acts as our high-speed routing layer, allowing us to instantly inject dynamic real-time telemetry (SpO2, Heart Rate) and patient records (Allergies) directly into the Groq-powered Qwen model's context window. This architecture ensures the AI has total situational awareness of the patient's biological state in real-time.
 
-🚀 Key Features
-True Hands-Free Toggle: Once activated, the microphone utilizes a custom silence-detection algorithm (600ms) to auto-send queries, and precisely calculates TTS audio-queue completion to auto-restart the microphone without echo feedback.
-Aggressive Language Forcing: Utilizing deep prompt engineering, the LLM is tightly constrained to output exact medical terminology in native BCP-47 tags (e.g., hi-IN, te-IN) without hallucinating literal idiom translations.
-Dockerized Microservices: Fully containerized Next.js frontend and FastAPI backend, deployed via CI/CD to Google Cloud Run for infinite auto-scaling.
-💻 Tech Stack
-Frontend: React, Next.js, Tailwind CSS, Lucide Icons
-Backend: Python, FastAPI, WebSockets, Uvicorn
-AI/Inference: Groq Cloud, Qwen 3.8-27b, Moss Gateway
-Voice: Web Speech API, Cartesia Sonic Multilingual
-Cloud Infrastructure: Google Cloud Run, Docker
-🛠️ Local Installation
-Clone the repository git clone https://github.com/YourUsername/Pulse-Medical-AI.git
+---
 
-Backend Setup
+## 🚀 Key Features
 
-bash
+* **True Hands-Free Toggle:** Once activated, the microphone utilizes a custom silence-detection algorithm (600ms) to auto-send queries, and precisely calculates TTS audio-queue completion to auto-restart the microphone without echo feedback.
+* **Aggressive Language Forcing:** Utilizing deep prompt engineering, the LLM is tightly constrained to output exact medical terminology in native BCP-47 tags (e.g., `hi-IN`, `te-IN`) without hallucinating literal idiom translations.
+* **Dockerized Microservices:** Fully containerized Next.js frontend and FastAPI backend, deployed via CI/CD to Google Cloud Run for infinite auto-scaling.
 
+---
 
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-# Create a .env file with your API keys
-uvicorn main:app --reload --port 8080
-Frontend Setup
+## 💻 Tech Stack
 
-bash
+* **Frontend:** React, Next.js, Tailwind CSS, Lucide Icons
+* **Backend:** Python, FastAPI, WebSockets, Uvicorn
+* **AI/Inference:** Groq Cloud, Qwen 3.8-27b, Moss Gateway
+* **Voice:** Web Speech API, Cartesia Sonic Multilingual
+* **Cloud Infrastructure:** Google Cloud Run, Docker
 
+---
 
-cd frontend
-npm install
-npm run dev
+## 🛠️ Local Installation
+
+1. **Clone the repository**
+   `git clone https://github.com/YourUsername/Pulse-Medical-AI.git`
+
+2. **Backend Setup**
+   ```bash
+   cd backend
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   
+   # Create a .env file with your API keys
+   uvicorn main:app --reload --port 8080
+   ```
+
+3. **Frontend Setup**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
