@@ -24,43 +24,19 @@ In high-stress mass-casualty events, cognitive overload causes fatal mistakes. P
 
 ## 🏗️ System Architecture
 
-Pulse was engineered from the ground up for zero-latency streaming. It utilizes a duplex WebSocket architecture to stream text and telemetry context directly into the LLM, bypassing traditional HTTP overhead.
+Pulse was engineered from the ground up for zero-latency streaming, utilizing a complex, multi-region architecture designed for the Moss Zero Latency Builder Sprint.
 
-```mermaid
-graph TD
-    subgraph Frontend [Next.js Client]
-        MIC[Web Speech API STT]
-        UI[Telemetry Dashboard]
-        TTS[Native TTS / Cartesia Audio Player]
-    end
+For a comprehensive breakdown of the entire infrastructure, please refer to the complete **[Architecture Design Document (ARCHITECTURE.md)](./ARCHITECTURE.md)**.
 
-    subgraph Backend [FastAPI Server]
-        WS[WebSocket Manager]
-        PROMPT[Dynamic Prompt Engine]
-    end
-
-    subgraph Inference & Services
-        MOSS[Moss Gateway]
-        GROQ[Groq: Qwen 3.8-27b]
-        CARTESIA[Cartesia TTS]
-    end
-
-    MIC -->|Audio to Text| UI
-    UI -->|JSON: Text, Vitals, EHR, Lang| WS
-    WS --> PROMPT
-    PROMPT -->|Aggressive Context Injection| MOSS
-    MOSS -->|Sub-second routing| GROQ
-    
-    GROQ -->|Streamed Tokens| WS
-    
-    WS -->|If EN: Tokens| CARTESIA
-    CARTESIA -->|PCM Audio Stream| TTS
-    
-    WS -->|If HI/TE: Raw Text| TTS
-```
+### Core Pipeline Overview
+1. **Ingestion (Edge):** Ambulance tablets stream raw audio bidirectionally via **WebRTC** to a Node.js edge signaling server.
+2. **Speech-to-Text (STT):** Audio is chunked (200ms) and routed to a GPU-accelerated Whisper model (Nvidia T4 on GKE) using Triton Inference Server.
+3. **Orchestration:** A Golang API Gateway (Kong) strips PII before routing to the Agent Orchestrator.
+4. **Intelligence (RAG):** The orchestrator queries a PostgreSQL database (`pgvector`) for medical protocols, then streams context and transcripts to **Groq's Llama 3 API** for ultra-low latency inference.
+5. **Text-to-Speech (TTS):** Groq's generated tokens are streamed directly to **Cartesia (Sonic)** for synthetic voice generation, which is pushed back down the WebRTC socket to the paramedic.
 
 ### 🧠 The Moss Retrieval Layer
-We utilized the **Moss Gateway** to achieve absolute zero-latency retrieval. Instead of doing slow vector database lookups, Moss acts as our high-speed routing layer, allowing us to instantly inject dynamic real-time telemetry (SpO2, Heart Rate) and patient records (Allergies) directly into the Groq-powered Qwen model's context window. This architecture ensures the AI has total situational awareness of the patient's biological state in real-time.
+We utilized the **Moss Gateway** to achieve absolute zero-latency retrieval. Instead of doing slow vector database lookups, Moss acts as our high-speed routing layer, allowing us to instantly inject dynamic real-time telemetry (SpO2, Heart Rate) and patient records (Allergies) directly into the Groq-powered model's context window. This architecture ensures the AI has total situational awareness of the patient's biological state in real-time.
 
 ---
 
