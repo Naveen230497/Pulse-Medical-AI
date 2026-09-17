@@ -29,6 +29,53 @@ Pulse was engineered from the ground up for zero-latency streaming, utilizing a 
 For a comprehensive breakdown of the entire infrastructure, please refer to the complete **[Architecture Design Document (ARCHITECTURE.md)](./ARCHITECTURE.md)**.
 
 ### Core Pipeline Overview
+
+```mermaid
+graph TD
+    subgraph Edge [Ambulance Tablet]
+        APP[React Native App]
+    end
+
+    subgraph Ingestion & Edge Server
+        WS[Node.js WebRTC Server]
+        REDIS[(Redis State)]
+    end
+
+    subgraph Speech-to-Text
+        TRITON[Triton Inference Server]
+        WHISPER[Whisper GPU: Nvidia T4]
+    end
+
+    subgraph Security & Orchestration
+        KONG[Kong API Gateway & PII Stripper]
+        ORCH[Agent Orchestrator]
+    end
+
+    subgraph Intelligence & RAG
+        DB[(PostgreSQL + pgvector)]
+        GROQ[Groq Llama 3 API]
+    end
+
+    subgraph Text-to-Speech
+        CARTESIA[Cartesia Sonic API]
+    end
+
+    APP <-->|WebRTC| WS
+    WS <--> REDIS
+    WS -->|200ms Audio Chunks| TRITON
+    TRITON --> WHISPER
+    WHISPER -->|Raw Transcript| KONG
+    KONG --> ORCH
+    
+    ORCH -->|Embeddings Query| DB
+    DB -->|Medical Context| ORCH
+    ORCH -->|Context + Transcript| GROQ
+    
+    GROQ -->|Streamed Tokens| CARTESIA
+    CARTESIA -->|Synthesized Audio| WS
+    WS -->|PCM Audio Stream| APP
+```
+
 1. **Ingestion (Edge):** Ambulance tablets stream raw audio bidirectionally via **WebRTC** to a Node.js edge signaling server.
 2. **Speech-to-Text (STT):** Audio is chunked (200ms) and routed to a GPU-accelerated Whisper model (Nvidia T4 on GKE) using Triton Inference Server.
 3. **Orchestration:** A Golang API Gateway (Kong) strips PII before routing to the Agent Orchestrator.
