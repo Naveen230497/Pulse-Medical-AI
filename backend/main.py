@@ -94,10 +94,18 @@ async def stream_groq_to_cartesia(text: str, frontend_ws: WebSocket, vitals: dic
         await frontend_ws.send_text(json.dumps({"type": "text_chunk", "content": allergy_warning}))
         return allergy_warning
 
-    # 2. LLM / Moss Context Injection
+    # 2. Moss Semantic Protocol Search
+    from services.moss_client import query_moss
+    moss_result = await query_moss(text)
+    moss_protocol = moss_result["protocol"]
+    moss_latency = moss_result["latency_ms"]
+    logging.info(f"Moss Retrieval Latency: {moss_latency:.2f}ms")
+
+    # 3. LLM / Moss Context Injection
     user_content = f"[PATIENT FILE - Allergies: {patient_allergies}]\n"
     if vitals:
         user_content += f"[TELEMETRY - HR {vitals.get('hr')}, SpO2 {vitals.get('spo2')}]\n"
+    user_content += f"[MOSS PROTOCOL SEARCH] {moss_protocol}\n"
     user_content += f"\nParamedic Query: {text}"
 
     forced_system_prompt = SYSTEM_PROMPT

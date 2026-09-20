@@ -20,14 +20,27 @@ Pulse is a zero-latency, voice-first AI co-pilot designed for single-patient fie
 
 Pulse utilizes a duplex WebSocket architecture to stream text and telemetry context directly into the LLM, bypassing traditional HTTP overhead. 
 
+```mermaid
+graph TD
+    Client[Paramedic Web Client] <-->|WebSocket Audio/JSON| FA[FastAPI Backend - GCP Cloud Run]
+    Client <-->|HTTPS| NJ[Next.js Frontend - GCP Cloud Run]
+    
+    FA -->|EHR / Vitals Check| AC[Rule-Based Allergy Guardrail]
+    AC -- Pass --> GC[Groq Inference - Qwen]
+    AC -- Fail --> Alert[Critical Override Alert]
+    
+    GC -->|Streaming Text| Cartesia[Cartesia TTS]
+    Cartesia -->|PCM Audio Chunk| FA
+```
+
 *   **Frontend:** Next.js, React, Tailwind CSS (Deployed on Google Cloud Run)
 *   **Backend:** FastAPI, Python, WebSockets (Deployed on Google Cloud Run)
 *   **AI/Inference:** Groq Cloud (Qwen 3.8-27b)
 *   **Voice:** Web Speech API, Cartesia Sonic
 
-### 🧠 Semantic Search (Moss Gateway Plan)
-*Current State:* Telemetry and EHR data are directly injected into the prompt based on a 1:1 patient ID match.
-*Future State:* We plan to integrate the **Moss Gateway** to perform sub-10ms semantic searches over thousands of medical protocols (e.g., matching "chest pain and low BP" to the correct EMS protocol).
+### 🧠 Moss Semantic Search
+*   **Protocol Retrieval:** Instead of relying on the LLM to memorize medical guidelines, Pulse routes the paramedic's query through the **Moss Retrieval Layer**. 
+*   **Sub-10ms Lookups:** Moss instantly searches thousands of EMS protocols (e.g., matching "chest pain and low BP" to AHA-202) and injects the exact protocol steps into the LLM's context window.
 
 ---
 
