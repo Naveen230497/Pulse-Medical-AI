@@ -1,4 +1,4 @@
-﻿import os
+import os
 import json
 import logging
 import asyncio
@@ -47,44 +47,78 @@ class EPCRRequest(BaseModel):
     transcript: str
     patient: dict
 
+@app.get("/health")
+async def health_check():
+    health_status = {"status": "ok", "service": "pulse-backend", "groq": "untested"}
+    if groq_client:
+        try:
+            # Ping Groq to verify external dependency is alive
+            await groq_client.models.list()
+            health_status["groq"] = "ok"
+        except Exception as e:
+            health_status["status"] = "degraded"
+            health_status["groq"] = "down"
+    else:
+        health_status["status"] = "degraded"
+        health_status["groq"] = "missing_key"
+    return health_status
+
 @app.post("/generate_epcr")
 async def generate_epcr(request: EPCRRequest):
     if not groq_client: return {"error": "GROQ_API_KEY missing."}
     pat = request.patient
     prompt = f"""Generate an official EMS ePCR (Electronic Patient Care Report) based on this audio transcript.
-Patient Info: {pat.get('name', 'Unknown')}, Age {pat.get('age', 'Unknown')}. Allergies: {pat.get('allergies', 'None')}.
-Format it professionally as a clinical document without markdown asterisks. Include:
-1. Dispatch & Patient Info
-2. Primary Assessment & Vitals
-3. Interventions & Meds
-4. Narrative Summary
-
-Transcript:
 {request.transcript}"""
     try:
         completion = await groq_client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model="qwen/qwen3.8-27b",
-            temperature=0.2
         )
-        return {"report": completion.choices[0].message.content}
+        return {"epcr": completion.choices[0].message.content}
     except Exception as e:
         return {"error": str(e)}
 
 async def stream_groq_to_cartesia(text: str, frontend_ws: WebSocket, vitals: dict = None, profile: dict = None, lang: str = "en-US") -> str:
+    import time
+    start_time = time.time()
+    
+    # 1. Deterministic Rule-Based Allergy Check
+    from services.allergy_checker import check_allergies
+    patient_allergies = profile.get('allergies', 'none') if profile else 'none'
+    allergy_warning = check_allergies(text, patient_allergies)
+    
+    if allergy_warning:
+        # Short-circuit the LLM and return the deterministic warning immediately
+        latency = time.time() - start_time
+        logging.warning(f"Allergy Guardrail Triggered in {latency:.3f}s: {allergy_warning}")
+        await frontend_ws.send_text(json.dumps({"type": "text_chunk", "content": allergy_warning}))
+        return allergy_warning
+
+    # 2. LLM / Moss Context Injection
+    user_content = f"[PATIENT FILE - Allergies: {patient_allergies}]\n"
+    if vitals:
+        user_content += f"[TELEMETRY - HR {vitals.get('hr')}, SpO2 {vitals.get('spo2')}]\n"
+    user_content += f"\nParamedic Query: {text}"
+
+    forced_system_prompt = SYSTEM_PROMPT
+    if lang != "en-US":
+        forced_system_prompt += f"\n\n!!! CRITICAL LANGUAGE OVERRIDE !!!\nYou must reply EXCLUSIVELY in the language of this BCP-47 tag: {lang}. Do NOT use English under any circumstances.\nCRITICAL: You are a medical expert. Use professional medical terminology in {lang}. Answer the query directly and completely (1 to 3 sentences).\nIf the user asks an open-ended question (like 'what injection?'), clarify what symptoms you are treating first."
+
     if not groq_client:
         await frontend_ws.send_text(json.dumps({"type": "error", "content": "GROQ_API_KEY is missing."}))
         return ""
 
     full_ai_response = ""
     try:
-        user_content = ""
-        if profile:
-            user_content += f"[PATIENT FILE - Name: {profile.get('name')}, Age: {profile.get('age')}, ALLERGIES: {profile.get('allergies')}, History: {profile.get('history')}]\n"
-        if vitals:
-            user_content += f"[TELEMETRY ALERT - Heart Rate {vitals.get('hr')} BPM, SpO2 {vitals.get('spo2')}%, BP {vitals.get('bpSys')}/{vitals.get('bpDia')}]\n"
+        patient_allergies = profile.get('allergies', 'none') if profile else 'none'
+        allergy_warning = check_allergies(text, patient_allergies)
         
-        user_content += f"\nParamedic Query: {text}"
+        if allergy_warning:
+            # Short-circuit the LLM and return the deterministic warning immediately
+            latency = time.time() - start_time
+            logging.warning(f"Allergy Guardrail Triggered in {latency:.3f}s: {allergy_warning}")
+            await frontend_ws.send_text(json.dumps({"type": "text_chunk", "content": allergy_warning}))
+            return allergy_warning
 
         forced_system_prompt = SYSTEM_PROMPT
         if lang != "en-US":
