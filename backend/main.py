@@ -1,4 +1,4 @@
-import os
+﻿import os
 import json
 import logging
 import asyncio
@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import websockets
-from groq import AsyncGroq
+from openai import AsyncOpenAI
 
 # IPv4 Force fix for Windows
 orig_getaddrinfo = socket.getaddrinfo
@@ -23,10 +23,10 @@ load_dotenv("backend/.env")
 app = FastAPI(title="Pulse Voice Backend - Final Polish")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=False, allow_methods=["*"], allow_headers=["*"])
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+HIDEVS_API_KEY = os.getenv("HIDEVS_API_KEY")
 CARTESIA_API_KEY = os.getenv("CARTESIA_API_KEY")
 
-groq_client = AsyncGroq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
+llm_client = AsyncOpenAI(api_key=HIDEVS_API_KEY, base_url="https://llm.hidevs.xyz/v1") if HIDEVS_API_KEY else None
 
 SYSTEM_PROMPT = """You are Pulse, an ultra-fast, Universal Medical AI Co-Pilot. 
 You possess comprehensive knowledge of all medical fields, pharmacology, and trauma protocols.
@@ -49,36 +49,36 @@ class EPCRRequest(BaseModel):
 
 @app.get("/health")
 async def health_check():
-    health_status = {"status": "ok", "service": "pulse-backend", "groq": "untested"}
-    if groq_client:
+    health_status = {"status": "ok", "service": "pulse-backend", "llm": "untested"}
+    if llm_client:
         try:
-            # Ping Groq to verify external dependency is alive
-            await groq_client.models.list()
-            health_status["groq"] = "ok"
+            # Ping llm to verify external dependency is alive
+            await llm_client.models.list()
+            health_status["llm"] = "ok"
         except Exception as e:
             health_status["status"] = "degraded"
-            health_status["groq"] = "down"
+            health_status["llm"] = "down"
     else:
         health_status["status"] = "degraded"
-        health_status["groq"] = "missing_key"
+        health_status["llm"] = "missing_key"
     return health_status
 
 @app.post("/generate_epcr")
 async def generate_epcr(request: EPCRRequest):
-    if not groq_client: return {"error": "GROQ_API_KEY missing."}
+    if not llm_client: return {"error": "HIDEVS_API_KEY missing."}
     pat = request.patient
     prompt = f"""Generate an official EMS ePCR (Electronic Patient Care Report) based on this audio transcript.
 {request.transcript}"""
     try:
-        completion = await groq_client.chat.completions.create(
+        completion = await llm_client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
-            model="qwen/qwen3.8-27b",
+            model="gemini-3.6-flash",
         )
         return {"epcr": completion.choices[0].message.content}
     except Exception as e:
         return {"error": str(e)}
 
-async def stream_groq_to_cartesia(text: str, frontend_ws: WebSocket, vitals: dict = None, profile: dict = None, lang: str = "en-US") -> str:
+async def stream_ai_to_cartesia(text: str, frontend_ws: WebSocket, vitals: dict = None, profile: dict = None, lang: str = "en-US") -> str:
     import time
     start_time = time.time()
     
@@ -112,8 +112,8 @@ async def stream_groq_to_cartesia(text: str, frontend_ws: WebSocket, vitals: dic
     if lang != "en-US":
         forced_system_prompt += f"\n\n!!! CRITICAL LANGUAGE OVERRIDE !!!\nYou must reply EXCLUSIVELY in the language of this BCP-47 tag: {lang}. Do NOT use English under any circumstances.\nCRITICAL: You are a medical expert. Use professional medical terminology in {lang}. Answer the query directly and completely (1 to 3 sentences).\nIf the user asks an open-ended question (like 'what injection?'), clarify what symptoms you are treating first."
 
-    if not groq_client:
-        await frontend_ws.send_text(json.dumps({"type": "error", "content": "GROQ_API_KEY is missing."}))
+    if not llm_client:
+        await frontend_ws.send_text(json.dumps({"type": "error", "content": "HIDEVS_API_KEY is missing."}))
         return ""
 
     full_ai_response = ""
@@ -136,9 +136,9 @@ async def stream_groq_to_cartesia(text: str, frontend_ws: WebSocket, vitals: dic
             async def pump_tokens_only():
                 nonlocal full_ai_response
                 try:
-                    stream = await groq_client.chat.completions.create(
+                    stream = await llm_client.chat.completions.create(
                         messages=[{"role": "system", "content": forced_system_prompt}, {"role": "user", "content": user_content}],
-                        model="qwen/qwen3.8-27b", temperature=0.3, max_tokens=500, stream=True
+                        model="gemini-3.6-flash", temperature=0.3, max_tokens=500, stream=True
                     )
                     async for chunk in stream:
                         content = chunk.choices[0].delta.content
@@ -151,9 +151,9 @@ async def stream_groq_to_cartesia(text: str, frontend_ws: WebSocket, vitals: dic
             return full_ai_response
 
         # For supported languages, continue with Cartesia:
-        stream = await groq_client.chat.completions.create(
+        stream = await llm_client.chat.completions.create(
             messages=[{"role": "system", "content": forced_system_prompt}, {"role": "user", "content": user_content}],
-            model="qwen/qwen3.8-27b", temperature=0.3, max_tokens=500, stream=True
+            model="gemini-3.6-flash", temperature=0.3, max_tokens=500, stream=True
         )
 
         if not CARTESIA_API_KEY:
@@ -216,7 +216,7 @@ async def stream_groq_to_cartesia(text: str, frontend_ws: WebSocket, vitals: dic
         logging.info("Stream explicitly cancelled.")
         raise
     except Exception as e:
-        raise Exception(f"Groq API Error: {str(e)}")
+        raise Exception(f"llm API Error: {str(e)}")
 
 @app.websocket("/ws/voice")
 async def websocket_endpoint(websocket: WebSocket):
@@ -249,7 +249,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 
                 async def run_stream():
                     try:
-                        final_text = await asyncio.wait_for(stream_groq_to_cartesia(user_text, websocket, vitals, profile, lang), timeout=15.0)
+                        final_text = await asyncio.wait_for(stream_ai_to_cartesia(user_text, websocket, vitals, profile, lang), timeout=15.0)
                         if final_text:
                             await websocket.send_text(json.dumps({"type": "end_response", "full_text": final_text}))
                         else:
