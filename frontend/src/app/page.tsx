@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, useRef } from 'react';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
@@ -361,6 +361,14 @@ export default function AmbulanceDashboard() {
         <div className="flex items-center gap-3">
           <div className="bg-red-500 p-1.5 rounded-md"><Activity className="w-5 h-5 text-white" /></div>
           <span className="font-bold text-xl text-white">PULSE</span>
+          <div className="ml-6 flex items-center gap-3 border-l border-white/20 pl-6 hidden md:flex">
+            <span className="bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 text-[10px] font-mono tracking-widest px-2 py-1 rounded-sm flex items-center gap-1">
+              <Circle className="w-2 h-2 fill-emerald-500 animate-pulse" /> MOSS SEMANTIC LAYER: ACTIVE
+            </span>
+            <span className="bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 text-[10px] font-mono tracking-widest px-2 py-1 rounded-sm flex items-center gap-1">
+              <ShieldAlert className="w-3 h-3 text-cyan-400" /> GUARDRAILS: ARMED
+            </span>
+          </div>
         </div>
         
         {triage !== 'UNASSIGNED' && (
