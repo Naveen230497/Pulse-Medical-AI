@@ -385,7 +385,7 @@ export default function AmbulanceDashboard() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-black/50 border border-white/10 rounded-full px-3 py-1.5">
             <Globe className="w-4 h-4 text-blue-400" />
-            <select value={lang} onChange={(e) => { if (isListening) stopListening(); setLang(e.target.value); }} className="bg-transparent text-xs text-white outline-none cursor-pointer"><option value="en-US">English</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option><option value="es-ES">Spanish (Espaâ”œâ–’ol)</option><option value="fr-FR">French (Franâ”œÂºais)</option><option value="de-DE">German (Deutsch)</option><option value="pt-PT">Portuguese</option><option value="zh-CN">Chinese</option></select>
+            <select value={lang} onChange={(e) => { if (isListening) stopListening(); setLang(e.target.value); }} className="bg-transparent text-xs text-white outline-none cursor-pointer"><option className="bg-neutral-900" value="en-US">English</option><option className="bg-neutral-900" value="hi-IN">Hindi</option><option className="bg-neutral-900" value="te-IN">Telugu</option><option className="bg-neutral-900" value="es-ES">Spanish (Espaâ”œâ–’ol)</option><option className="bg-neutral-900" value="fr-FR">French (Franâ”œÂºais)</option><option className="bg-neutral-900" value="de-DE">German (Deutsch)</option><option className="bg-neutral-900" value="pt-PT">Portuguese</option><option className="bg-neutral-900" value="zh-CN">Chinese</option></select>
           </div>
           {chatHistory.length > 0 && (
              <button onClick={generateReport} className="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2"><FileText className="w-3 h-3" /> Gen ePCR</button>
@@ -471,17 +471,13 @@ export default function AmbulanceDashboard() {
               <div className="bg-black/60 border border-white/10 rounded-xl p-4 overflow-hidden relative font-mono min-h-[80px]">
                 <div className="text-[10px] text-blue-500 mb-2">SAT-COM UPLINK // RAW TRANSCRIPT</div>
                 <div className="text-xl text-neutral-300 relative z-10">{transcript} <span className="text-neutral-500 animate-pulse">{interimTranscript}</span></div>
-                {lang !== 'en-US' && aiResponse && (
-                  <div className="mt-3 pt-3 border-t border-white/10 text-sm text-yellow-500 font-sans italic">
-                    [LIVE TRANSLATION ENG]: {aiResponse.substring(0, 80)}...
-                  </div>
-                )}
+                
               </div>
             </div>
 
             <div className="flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-2"><Activity className={`w-4 h-4 ${isProcessing ? 'text-red-500 animate-spin' : 'text-red-600'}`} /><span className="text-xs font-mono uppercase text-red-500 font-bold">Pulse AI Response</span></div>
-              <div id="ai-response-box" className="flex-1 rounded-xl p-4 text-2xl font-light leading-relaxed bg-black/20 text-neutral-200">{aiResponse}</div>
+              <div id="ai-response-box" className="flex-1 rounded-xl p-4 text-xl font-medium leading-snug bg-black/20 text-neutral-200 overflow-hidden">{aiResponse}</div>
             </div>
           </div>
 
@@ -559,7 +555,7 @@ export default function AmbulanceDashboard() {
       </main>
 
       <div className="fixed bottom-0 left-0 w-full bg-black/80 border-t border-white/10 p-2 flex justify-center gap-4 text-xs z-50 hover:opacity-100 opacity-0 transition-opacity">
-        <select value={lang} onChange={(e) => { if (isListening) stopListening(); setLang(e.target.value); }} className="bg-neutral-900 border border-white/20 text-white px-2 py-1 rounded text-xs mr-4"><option value="en-US">English</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option><option value="es-ES">Spanish (Espaâ”œâ–’ol)</option><option value="fr-FR">French (Franâ”œÂºais)</option><option value="de-DE">German (Deutsch)</option><option value="pt-PT">Portuguese</option><option value="zh-CN">Chinese</option></select><span className="text-neutral-500 flex items-center uppercase font-mono tracking-widest mr-4">Demo Controls:</span>
+        <select value={lang} onChange={(e) => { if (isListening) stopListening(); setLang(e.target.value); }} className="bg-neutral-900 border border-white/20 text-white px-2 py-1 rounded text-xs mr-4"><option className="bg-neutral-900" value="en-US">English</option><option className="bg-neutral-900" value="hi-IN">Hindi</option><option className="bg-neutral-900" value="te-IN">Telugu</option><option className="bg-neutral-900" value="es-ES">Spanish (Espaâ”œâ–’ol)</option><option className="bg-neutral-900" value="fr-FR">French (Franâ”œÂºais)</option><option className="bg-neutral-900" value="de-DE">German (Deutsch)</option><option className="bg-neutral-900" value="pt-PT">Portuguese</option><option className="bg-neutral-900" value="zh-CN">Chinese</option></select><span className="text-neutral-500 flex items-center uppercase font-mono tracking-widest mr-4">Demo Controls:</span>
         <button onClick={() => setDemoMode('NORMAL')} className="px-3 py-1 rounded border border-white/20 text-white hover:bg-white/10">Normal</button>
         <button onClick={() => setDemoMode('ANAPHYLAXIS')} className="px-3 py-1 rounded border border-white/20 text-white hover:bg-white/10">Anaphylaxis</button>
         <button onClick={() => setDemoMode('CARDIAC_ARREST')} className="px-3 py-1 rounded border border-white/20 text-white hover:bg-white/10">Cardiac Arrest</button>
@@ -609,6 +605,7 @@ export default function AmbulanceDashboard() {
     </>
   );
 }
+
 
 
 
