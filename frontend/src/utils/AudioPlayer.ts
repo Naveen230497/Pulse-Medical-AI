@@ -26,12 +26,12 @@ export class StreamingAudioPlayer {
   }
 
   public stop() {
-    // Stop all active sources instantly without destroying the hardware context
+    if (!this.audioContext) return; // FIX WEAK-08: guard against null context
     this.activeSources.forEach(source => {
       try { source.stop(); } catch (e) {}
     });
     this.activeSources = [];
-    this.nextPlayTime = this.audioContext ? this.audioContext.currentTime : 0;
+    this.nextPlayTime = this.audioContext.currentTime;
   }
 
   // Instantly kills current playback and drops the queue

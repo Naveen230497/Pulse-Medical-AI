@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useRef } from 'react';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
@@ -18,7 +18,8 @@ export default function AmbulanceDashboard() {
   // God Mode States
   const [demoMode, setDemoMode] = useState('NORMAL');
   const [vitals, setVitals] = useState({ hr: 75, spo2: 98, bpSys: 120, bpDia: 80 });
-  const [patientProfile] = useState({ name: "John Doe", age: 42, weight: "85kg", allergies: "Penicillin", history: "Hypertension" });
+  const [patientProfile, setPatientProfile] = useState({ name: "John Doe", age: 42, weight: "85kg", allergies: "Penicillin", history: "Hypertension" });
+  const [isEditingPatient, setIsEditingPatient] = useState(false);
   
   // Advanced States
   const [flashWhite, setFlashWhite] = useState(false);
@@ -45,13 +46,17 @@ export default function AmbulanceDashboard() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportData, setReportData] = useState<string | null>(null);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [mossStats, setMossStats] = useState<{latency_ms: number, protocol: string, session_turns: number} | null>(null);
+  const [persona, setPersona] = useState('PARAMEDIC');
+  const [e2eLatency, setE2eLatency] = useState<number | null>(null);
   
   const audioPlayerRef = useRef<StreamingAudioPlayer | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttempts = useRef<number>(0);
   const defibTimerRef = useRef<NodeJS.Timeout | null>(null);
   const medevacTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     audioCtx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     return () => { 
         if (audioCtx.current) audioCtx.current.close(); 
@@ -61,7 +66,7 @@ export default function AmbulanceDashboard() {
     };
   }, []);
 
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     let streamRef: MediaStream | null = null;
     
@@ -82,7 +87,7 @@ export default function AmbulanceDashboard() {
     };
   }, [appState]);
 
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     const timer = setInterval(() => setEtaSeconds(p => Math.max(0, p - 1)), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -96,7 +101,7 @@ export default function AmbulanceDashboard() {
     window.speechSynthesis.speak(u);
   };
 
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     const interval = setInterval(() => {
       if (demoMode === 'NORMAL') {
         setVitals(prev => ({ hr: 75 + Math.floor(Math.random() * 5), spo2: 98 + Math.floor(Math.random() * 2), bpSys: 120, bpDia: 80 }));
@@ -114,7 +119,7 @@ export default function AmbulanceDashboard() {
     return () => clearInterval(interval);
   }, [demoMode, etaSeconds]);
 
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     if (vitals.hr === 0 && appState === 'ACTIVE') {
       if (!flatlineOscillator.current && audioCtx.current) {
         flatlineOscillator.current = audioCtx.current.createOscillator();
@@ -133,7 +138,7 @@ export default function AmbulanceDashboard() {
   }, [vitals.hr, appState]);
 
   // Commands
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     const userText = (transcript + ' ' + interimTranscript).toLowerCase();
     
     if (userText.includes("clear") && (userText.includes("shock") || userText.includes("patient")) && demoMode === 'CARDIAC_ARREST') triggerDefibrillator();
@@ -148,7 +153,7 @@ export default function AmbulanceDashboard() {
     if (userText.includes("deploy") && userText.includes("medevac")) triggerMedevac();
   }, [transcript, interimTranscript, demoMode]);
 
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     const aiText = aiResponse.toLowerCase();
     if (aiText.includes("cardiac arrest") || aiText.includes("anaphylaxis") || aiText.includes("severe bleeding")) setTriage('RED');
     else if (aiText.includes("fracture") || aiText.includes("stable")) { if (triage !== 'RED') setTriage('YELLOW'); }
@@ -204,7 +209,7 @@ export default function AmbulanceDashboard() {
     medevacTimerRef.current = setTimeout(() => setMedevacActive(false), 5000);
   };
 
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     if (appState !== 'ACTIVE') return;
     audioPlayerRef.current = new StreamingAudioPlayer();
     let wsInstance: WebSocket | null = null;
@@ -249,7 +254,7 @@ export default function AmbulanceDashboard() {
           });
         }
       };
-      ws.onclose = () => { setIsConnected(false); setSocket(null); if (!isUnmounted) reconnectTimer = setTimeout(connectWebSocket, 2000); };
+      ws.onclose = () => { setIsConnected(false); setSocket(null); if (!isUnmounted) { const delay = Math.min(30000, (reconnectAttempts.current + 1) * 2000); reconnectAttempts.current += 1; reconnectTimer = setTimeout(connectWebSocket, delay); } };
       setSocket(ws);
     };
 
@@ -271,11 +276,11 @@ export default function AmbulanceDashboard() {
     }
   };
 
-  useEffect(() => { console.log("%c=====================================\n%c✓ ZERO BUGS DETECTED\n✓ ULTRA-DEEP ANALYSIS COMPLETED\n✓ CERTIFIED BY ANTIGRAVITY\n%c=====================================", "color: #0f0; font-weight: bold", "color: #fff; font-size: 16px; background: #000; padding: 10px;", "color: #0f0; font-weight: bold");
+  useEffect(() => {
     const fullText = (transcript + ' ' + interimTranscript).trim();
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     if (isListening && fullText.length > 0 && !isProcessing) {
-      silenceTimerRef.current = setTimeout(() => sendQuery(fullText), 600); 
+      silenceTimerRef.current = setTimeout(() => sendQuery(fullText), 1500); 
     }
   }, [transcript, interimTranscript, isListening, socket, isProcessing]);
 
@@ -353,7 +358,7 @@ export default function AmbulanceDashboard() {
       {flashWhite && <div className="absolute inset-0 bg-white z-50 pointer-events-none" />}
       
       {medevacActive && (
-        <div className="absolute top-1/3 animate-[flyAcross_3s_linear] z-[100] text-7xl pointer-events-none drop-shadow-[0_0_30px_white]">ðŸšðŸ’¨</div>
+        <div className="absolute top-1/3 animate-[flyAcross_3s_linear] z-[100] text-7xl pointer-events-none drop-shadow-[0_0_30px_white]">â”œâ–‘â”¼â••â”¼Ã­â”¬Ã¼â”œâ–‘â”¼â••Î“Ã‡Ã–â”¬Â¿</div>
       )}
 
       {/* TOP NAV */}
@@ -380,7 +385,7 @@ export default function AmbulanceDashboard() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-black/50 border border-white/10 rounded-full px-3 py-1.5">
             <Globe className="w-4 h-4 text-blue-400" />
-            <select value={lang} onChange={(e) => { if (isListening) stopListening(); setLang(e.target.value); }} className="bg-transparent text-xs text-white outline-none cursor-pointer"><option value="en-US">English</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option><option value="es-ES">Spanish (Español)</option><option value="fr-FR">French (Français)</option><option value="de-DE">German (Deutsch)</option><option value="pt-PT">Portuguese</option><option value="zh-CN">Chinese</option></select>
+            <select value={lang} onChange={(e) => { if (isListening) stopListening(); setLang(e.target.value); }} className="bg-transparent text-xs text-white outline-none cursor-pointer"><option value="en-US">English</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option><option value="es-ES">Spanish (Espaâ”œâ–’ol)</option><option value="fr-FR">French (Franâ”œÂºais)</option><option value="de-DE">German (Deutsch)</option><option value="pt-PT">Portuguese</option><option value="zh-CN">Chinese</option></select>
           </div>
           {chatHistory.length > 0 && (
              <button onClick={generateReport} className="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2"><FileText className="w-3 h-3" /> Gen ePCR</button>
@@ -450,7 +455,7 @@ export default function AmbulanceDashboard() {
           {drugDose && (
              <div className="h-16 bg-yellow-500 text-black font-bold flex items-center justify-between px-6 rounded-xl animate-pulse shadow-[0_0_20px_rgba(234,179,8,0.4)]">
                 <div className="flex items-center gap-3"><Syringe className="w-6 h-6" /> DOSAGE CALCULATION</div>
-                <div className="text-2xl font-mono">{drugDose.drug} â€” {drugDose.dose}</div>
+                <div className="text-2xl font-mono">{drugDose.drug} â”œÃ³Î“Ã©Â¼Î“Ã‡Â¥ {drugDose.dose}</div>
              </div>
           )}
 
@@ -554,7 +559,7 @@ export default function AmbulanceDashboard() {
       </main>
 
       <div className="fixed bottom-0 left-0 w-full bg-black/80 border-t border-white/10 p-2 flex justify-center gap-4 text-xs z-50 hover:opacity-100 opacity-0 transition-opacity">
-        <select value={lang} onChange={(e) => { if (isListening) stopListening(); setLang(e.target.value); }} className="bg-neutral-900 border border-white/20 text-white px-2 py-1 rounded text-xs mr-4"><option value="en-US">English</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option><option value="es-ES">Spanish (Español)</option><option value="fr-FR">French (Français)</option><option value="de-DE">German (Deutsch)</option><option value="pt-PT">Portuguese</option><option value="zh-CN">Chinese</option></select><span className="text-neutral-500 flex items-center uppercase font-mono tracking-widest mr-4">Demo Controls:</span>
+        <select value={lang} onChange={(e) => { if (isListening) stopListening(); setLang(e.target.value); }} className="bg-neutral-900 border border-white/20 text-white px-2 py-1 rounded text-xs mr-4"><option value="en-US">English</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option><option value="es-ES">Spanish (Espaâ”œâ–’ol)</option><option value="fr-FR">French (Franâ”œÂºais)</option><option value="de-DE">German (Deutsch)</option><option value="pt-PT">Portuguese</option><option value="zh-CN">Chinese</option></select><span className="text-neutral-500 flex items-center uppercase font-mono tracking-widest mr-4">Demo Controls:</span>
         <button onClick={() => setDemoMode('NORMAL')} className="px-3 py-1 rounded border border-white/20 text-white hover:bg-white/10">Normal</button>
         <button onClick={() => setDemoMode('ANAPHYLAXIS')} className="px-3 py-1 rounded border border-white/20 text-white hover:bg-white/10">Anaphylaxis</button>
         <button onClick={() => setDemoMode('CARDIAC_ARREST')} className="px-3 py-1 rounded border border-white/20 text-white hover:bg-white/10">Cardiac Arrest</button>
@@ -578,9 +583,37 @@ export default function AmbulanceDashboard() {
         </div>
       )}
     </div>
+          {/* Patient Edit Modal */}
+      {isEditingPatient && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-white mb-4">Edit Patient File</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-neutral-400 text-xs font-mono mb-1">NAME</label>
+                <input type="text" value={patientProfile.name} onChange={e => setPatientProfile({...patientProfile, name: e.target.value})} className="w-full bg-black border border-neutral-700 rounded p-2 text-white" />
+              </div>
+              <div>
+                <label className="block text-neutral-400 text-xs font-mono mb-1">AGE</label>
+                <input type="number" value={patientProfile.age} onChange={e => setPatientProfile({...patientProfile, age: parseInt(e.target.value) || 0})} className="w-full bg-black border border-neutral-700 rounded p-2 text-white" />
+              </div>
+              <div>
+                <label className="block text-red-400 text-xs font-mono mb-1">ALLERGIES (comma separated)</label>
+                <input type="text" value={patientProfile.allergies} onChange={e => setPatientProfile({...patientProfile, allergies: e.target.value})} className="w-full bg-black border border-red-900/50 rounded p-2 text-white focus:border-red-500 outline-none" />
+              </div>
+              <button onClick={() => setIsEditingPatient(false)} className="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded">SAVE PROFILE</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
+
+
+
+
 
 
 
