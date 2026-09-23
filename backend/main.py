@@ -1,4 +1,4 @@
-import os
+﻿import os
 import json
 import logging
 import asyncio
@@ -36,12 +36,12 @@ async def lifespan(app: FastAPI):
         try:
             moss_client = MossClient(MOSS_PROJECT_ID, MOSS_PROJECT_KEY)
             await moss_client.load_index("pulse-protocols")
-            logging.info("✅ Moss index 'pulse-protocols' loaded successfully.")
+            logging.info("âœ… Moss index 'pulse-protocols' loaded successfully.")
         except Exception as e:
-            logging.error(f"❌ Failed to initialize Moss Client: {e}")
+            logging.error(f"âŒ Failed to initialize Moss Client: {e}")
             moss_client = None
     else:
-        logging.warning("⚠️ MOSS_PROJECT_ID or MOSS_PROJECT_KEY not set. Moss disabled.")
+        logging.warning("âš ï¸ MOSS_PROJECT_ID or MOSS_PROJECT_KEY not set. Moss disabled.")
     yield
     # Shutdown: nothing to clean up for now
 
@@ -138,7 +138,7 @@ async def stream_ai_to_cartesia(
         await frontend_ws.send_text(json.dumps({
             "type": "moss_telemetry",
             "latency_ms": 0.0,
-            "protocol": "⚠️ GUARDRAIL TRIGGERED — Allergy conflict detected...",
+            "protocol": "âš ï¸ GUARDRAIL TRIGGERED â€” Allergy conflict detected...",
             "session_turns": session_turn_counter[0] if session_turn_counter else 0
         }))
         await frontend_ws.send_text(json.dumps({"type": "text_chunk", "content": allergy_warning}))
@@ -183,7 +183,7 @@ async def stream_ai_to_cartesia(
             await frontend_ws.send_text(json.dumps({
                 "type": "moss_telemetry",
                 "latency_ms": -1,
-                "protocol": "Moss unavailable — using base knowledge",
+                "protocol": "Moss unavailable â€” using base knowledge",
                 "session_turns": session_count
             }))
 
@@ -202,12 +202,11 @@ async def stream_ai_to_cartesia(
     user_content += f"\nQuery: {text}"
 
     sys_prompt = SYSTEM_PROMPT_ER_DOCTOR if persona == "ER_DOCTOR" else SYSTEM_PROMPT_PARAMEDIC
-    if lang != "en-US":
-        sys_prompt += f"\nReply EXCLUSIVELY in the language of this BCP-47 tag: {lang}. NO English."
+    sys_prompt += f"\nCRITICAL RULE: You MUST reply EXCLUSIVELY in the language of this BCP-47 tag: {lang}. Do not use any other language!"
 
     full_ai_response = ""
     try:
-        # Indian language path — use browser TTS, no Cartesia
+        # Indian language path â€” use browser TTS, no Cartesia
         if lang.startswith("hi") or lang.startswith("te"):
             stream = await llm_client.chat.completions.create(
                 messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_content}],
@@ -229,13 +228,13 @@ async def stream_ai_to_cartesia(
                 ])
             return full_ai_response
 
-        # English path — stream to Cartesia TTS
+        # English path â€” stream to Cartesia TTS
         stream = await llm_client.chat.completions.create(
             messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_content}],
             model=ai_model, temperature=0.3, max_tokens=300, stream=True
         )
         if not CARTESIA_API_KEY:
-            logging.warning("No CARTESIA_API_KEY — returning text only")
+            logging.warning("No CARTESIA_API_KEY â€” returning text only")
             return ""
 
         voice_id = "f114a467-c40a-4db8-964d-aaba89cd08fa" if persona == "ER_DOCTOR" else "a0e99841-438c-4a64-b679-ae501e7d6091"
@@ -377,7 +376,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 current_task = asyncio.create_task(run_stream())
 
     except Exception:
-        # Connection closed — cleanup gracefully
+        # Connection closed â€” cleanup gracefully
         if current_task and not current_task.done():
             current_task.cancel()
 
@@ -385,3 +384,4 @@ async def websocket_endpoint(websocket: WebSocket):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
