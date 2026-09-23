@@ -1,4 +1,4 @@
-# Pulse: Zero-Latency Medical AI Co-Pilot
+﻿# Pulse: Zero-Latency Medical AI Co-Pilot
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Status: Production](https://img.shields.io/badge/Status-Production-success.svg)](https://pulse-frontend-297907968720.us-central1.run.app)
@@ -13,7 +13,7 @@
 
 ## Enterprise System Architecture
 
-*(Please refer to `ARCHITECTURE.md` for the high-resolution developer-generated diagram).*
+*(Please refer to `docs/ARCHITECTURE.md` for the high-resolution developer-generated diagram).*
 
 ```mermaid
 graph TD
@@ -134,3 +134,4 @@ docker-compose up --build
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
+
