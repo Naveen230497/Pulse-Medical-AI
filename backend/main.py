@@ -230,17 +230,6 @@ async def stream_ai_to_cartesia(
     recent_context = ""
     session_count = session_turn_counter[0] if session_turn_counter else 0
 
-    if not moss_client:
-        # Fallback if credits are exhausted or client didn't load
-        await frontend_ws.send_text(json.dumps({
-            "type": "moss_telemetry",
-            "latency_ms": 0,
-            "alpha": 0,
-            "severity": vitals_severity,
-            "protocol": "? Moss API Credits Exhausted ?" Offline Mode",
-            "session_turns": 0
-        }))
-        
     if moss_client:
         m_start = time.time()
         try:
