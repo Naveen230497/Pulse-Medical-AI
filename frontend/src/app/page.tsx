@@ -602,23 +602,7 @@ export default function AmbulanceDashboard() {
             </div>
           </div>
 
-          {/* Agentic Pipeline Telemetry */}
-          {pipelineSteps.length > 0 && (
-            <div className="bg-black/60 border border-white/10 rounded-xl p-4 mt-4 font-mono text-xs w-full">
-              <div className="text-white/50 mb-3 flex items-center gap-2"><Activity className="w-3 h-3"/> AGENTIC PIPELINE TELEMETRY</div>
-              <div className="flex flex-col gap-2">
-                {pipelineSteps.map(step => (
-                  <div key={step.id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {step.status === 'pending' ? <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"/> : step.status === 'error' ? <div className="w-2 h-2 rounded-full bg-red-500"/> : <div className="w-2 h-2 rounded-full bg-emerald-500"/>}
-                      <span className={step.color || 'text-white/80'}>{step.name}</span>
-                    </div>
-                    <span className="text-white/40">{step.ms}ms</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+
 
           <div className="flex items-center gap-3 mb-2">
             <button onClick={toggleHandsFreeMode} className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold tracking-widest border transition-all ${ handsFreeMode ? 'bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-white/5 border-white/20 text-neutral-400 hover:border-white/40' }`}>
@@ -701,6 +685,24 @@ export default function AmbulanceDashboard() {
               <span className="text-purple-400 font-bold">{mossStats?.session_turns || 0}</span>
             </div>
           </div>
+
+          {/* Agentic Pipeline Telemetry */}
+          {pipelineSteps.length > 0 && (
+            <div className="bg-black/60 border border-white/10 rounded-xl p-4 mt-4 font-mono text-xs w-full">
+              <div className="text-white/50 mb-3 flex items-center gap-2"><Activity className="w-3 h-3"/> AGENTIC PIPELINE TELEMETRY</div>
+              <div className="flex flex-col gap-2">
+                {pipelineSteps.map(step => (
+                  <div key={step.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {step.status === 'pending' ? <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"/> : step.status === 'error' ? <div className="w-2 h-2 rounded-full bg-red-500"/> : <div className="w-2 h-2 rounded-full bg-emerald-500"/>}
+                      <span className={step.color || 'text-white/80'}>{step.name}</span>
+                    </div>
+                    <span className="text-white/40">{step.ms}ms</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           {/* CHECKLIST */}
           <div className="flex-1 bg-neutral-900/50 border border-white/10 rounded-xl p-4 flex flex-col overflow-y-auto">
