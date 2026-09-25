@@ -598,7 +598,7 @@ export default function AmbulanceDashboard() {
 
             <div className="flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-2"><Activity className={`w-4 h-4 ${isProcessing ? 'text-red-500 animate-spin' : 'text-red-600'}`} /><span className="text-xs font-mono uppercase text-red-500 font-bold">Pulse AI Response</span></div>
-              <div id="ai-response-box" className="flex-1 rounded-xl p-4 text-xl font-medium leading-snug bg-black/20 text-neutral-200 overflow-hidden">{aiResponse}</div>
+              <div id="ai-response-box" className="flex-1 rounded-xl p-4 text-lg md:text-xl font-medium leading-relaxed bg-black/20 text-neutral-200 overflow-y-auto shadow-inner border border-white/5">{aiResponse}</div>
             </div>
           </div>
 
