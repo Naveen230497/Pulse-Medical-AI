@@ -623,7 +623,8 @@ export default function AmbulanceDashboard() {
             <button onClick={toggleHandsFreeMode} className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold tracking-widest border transition-all ${ handsFreeMode ? 'bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-white/5 border-white/20 text-neutral-400 hover:border-white/40' }`}>
               {handsFreeMode ? '🎙️ HANDS-FREE: ON — TAP TO DEACTIVATE' : '🎙️ ACTIVATE HANDS-FREE MODE'}
             </button>
-          </di<div className={`h-20 ${handsFreeMode ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-black rounded-xl shadow-[0_0_25px_rgba(34,197,94,0.5)]' : ''}`}>
+          </div>
+          <div className={`h-20 ${handsFreeMode ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-black rounded-xl shadow-[0_0_25px_rgba(34,197,94,0.5)]' : ''}`}>
             {!isListening ? (
               <button onClick={handleStartListening} className={`w-full h-full flex items-center justify-center gap-3 rounded-xl font-bold text-xl transition-all shadow-[0_0_30px_rgba(220,38,38,0.4)] ${!isConnected ? 'bg-red-900/80 border border-red-500 text-red-200 hover:bg-red-800' : 'bg-red-600 text-white hover:bg-red-500'}`}>
                 <Mic className="w-6 h-6" /> 
