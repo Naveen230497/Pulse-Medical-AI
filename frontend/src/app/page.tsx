@@ -335,35 +335,50 @@ export default function AmbulanceDashboard() {
   }, [appState]);
 
   const sendQuery = (fullText: string) => {
-    if (fullText && socket && socket.readyState === WebSocket.OPEN) {
-      audioPlayerRef.current?.interrupt();
-      setChatHistory(prev => [...prev, {role: 'user', content: fullText}, {role: 'ai', content: '[AI_PLACEHOLDER]'}]);
+    if (!fullText) return;
+    
+    audioPlayerRef.current?.interrupt();
+    setChatHistory(prev => [...prev, {role: 'user', content: fullText}, {role: 'ai', content: '[AI_PLACEHOLDER]'}]);
+    
+    // OFFLINE & ONLINE LOCAL GUARDRAIL
+    const localGuardrail = offlineAllergyCheck(fullText, patientProfile.allergies);
+    if (localGuardrail) {
+      setPipelineSteps([{ id: 'guardrail', name: 'Zero-Token Local Guardrail (Offline)', ms: '< 1', status: 'error', color: 'text-red-500' }]);
+      setAiResponse(localGuardrail);
+      setIsProcessing(false);
       
-      const localGuardrail = offlineAllergyCheck(fullText, patientProfile.allergies);
-      if (localGuardrail) {
-        setPipelineSteps([{ id: 'guardrail', name: 'Zero-Token Local Guardrail', ms: '< 1', status: 'error', color: 'text-red-500' }]);
-        setAiResponse(localGuardrail);
-        setIsProcessing(false);
-        // Fix Bug 6: Replace placeholder
-        setChatHistory(prev => {
-          const newHistory = [...prev];
-          newHistory[newHistory.length - 1].content = localGuardrail;
-          return newHistory;
-        });
-        return;
-      }
+      const utterance = new SpeechSynthesisUtterance(localGuardrail);
+      window.speechSynthesis.speak(utterance);
       
-      // Imp 4: Auto-clear pipeline on new query
+      setChatHistory(prev => {
+        const newHistory = [...prev];
+        newHistory[newHistory.length - 1].content = localGuardrail;
+        return newHistory;
+      });
+      clearTranscript();
+      return;
+    }
+    
+    // ONLINE QUERY
+    if (socket && socket.readyState === WebSocket.OPEN) {
       setPipelineSteps([
         { id: 'stt', name: 'Voice -> Text Transcription', ms: '0', status: 'done' },
         { id: 'guardrail', name: 'Allergy Guardrail Check', ms: '< 1', status: 'done', color: 'text-emerald-400' },
         { id: 'moss', name: 'Moss Hybrid Context Search (Vector + BM25)', ms: '...', status: 'pending' }
       ]);
-
-      // Fix Bug 1: Add persona to payload
+      
       socket.send(JSON.stringify({ type: 'text', text: fullText, vitals: vitals, profile: patientProfile, lang: lang, persona: persona }));
-      clearTranscript();
+    } else {
+      // TRULY OFFLINE WITHOUT GUARDRAIL TRIGGER
+      const offlineMsg = "OFFLINE MODE: No connection to Pulse Backend. Only Guardrails are active.";
+      setAiResponse(offlineMsg);
+      setChatHistory(prev => {
+        const newHistory = [...prev];
+        newHistory[newHistory.length - 1].content = offlineMsg;
+        return newHistory;
+      });
     }
+    clearTranscript();
   };
 
   useEffect(() => {
@@ -608,14 +623,12 @@ export default function AmbulanceDashboard() {
             <button onClick={toggleHandsFreeMode} className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold tracking-widest border transition-all ${ handsFreeMode ? 'bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-white/5 border-white/20 text-neutral-400 hover:border-white/40' }`}>
               {handsFreeMode ? '🎙️ HANDS-FREE: ON — TAP TO DEACTIVATE' : '🎙️ ACTIVATE HANDS-FREE MODE'}
             </button>
-          </div>
-          <div className={`h-20 ${handsFreeMode ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-black rounded-xl shadow-[0_0_25px_rgba(34,197,94,0.5)]' : ''}`}>
-            {!isConnected ? (
-              <div className="w-full h-full flex items-center justify-center gap-3 bg-red-900/30 border border-red-500 text-red-400 rounded-xl font-bold text-sm font-mono shadow-[0_0_15px_rgba(239,68,68,0.2)]">
-                📡 OFFLINE — DEAD RECKONING ACTIVE — Voice Guardrails Running Locally
-              </div>
-            ) : !isListening ? (
-              <button onClick={handleStartListening} disabled={!isConnected} className="w-full h-full flex items-center justify-center gap-3 bg-red-600 text-white rounded-xl font-bold text-xl hover:bg-red-500 transition-all shadow-[0_0_30px_rgba(220,38,38,0.4)]"><Mic className="w-6 h-6" /> Press to Speak</button>
+          </di<div className={`h-20 ${handsFreeMode ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-black rounded-xl shadow-[0_0_25px_rgba(34,197,94,0.5)]' : ''}`}>
+            {!isListening ? (
+              <button onClick={handleStartListening} className={`w-full h-full flex items-center justify-center gap-3 rounded-xl font-bold text-xl transition-all shadow-[0_0_30px_rgba(220,38,38,0.4)] ${!isConnected ? 'bg-red-900/80 border border-red-500 text-red-200 hover:bg-red-800' : 'bg-red-600 text-white hover:bg-red-500'}`}>
+                <Mic className="w-6 h-6" /> 
+                {!isConnected ? '📡 OFFLINE: TAP TO USE LOCAL GUARDRAIL' : 'Press to Speak'}
+              </button>
             ) : (
               <button onClick={handleStopAndSend} className="w-full h-full flex items-center justify-center gap-3 bg-white text-black rounded-xl font-bold text-xl hover:scale-[1.02] transition-all shadow-[0_0_50px_rgba(255,255,255,0.4)]"><div className="w-4 h-4 bg-red-600 rounded-sm animate-pulse" /> Tap to Send</button>
             )}
