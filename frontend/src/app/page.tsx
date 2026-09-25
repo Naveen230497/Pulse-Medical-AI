@@ -55,6 +55,12 @@ export default function AmbulanceDashboard() {
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [mossStats, setMossStats] = useState<{latency_ms: number, protocol: string, session_turns: number} | null>(null);
   const [persona, setPersona] = useState('PARAMEDIC');
+  const [handsFreeMode, setHandsFreeModeState] = useState(false);
+  const handsFreeModeRef = useRef(false);
+  const setHandsFreeMode = (val: boolean) => {
+    setHandsFreeModeState(val);
+    handsFreeModeRef.current = val;
+  };
   const [e2eLatency, setE2eLatency] = useState<number | null>(null);
   
   const audioPlayerRef = useRef<StreamingAudioPlayer | null>(null);
@@ -298,12 +304,12 @@ export default function AmbulanceDashboard() {
           if (lang.startsWith('hi') || lang.startsWith('te')) {
              const utterance = new SpeechSynthesisUtterance(finalText);
              utterance.lang = lang;
-             utterance.onend = () => { setTimeout(() => { startListening(); }, 500); };
-             utterance.onerror = (e) => { console.error('TTS Error', e); setTimeout(() => { startListening(); }, 500); };
+             utterance.onend = () => { if (handsFreeModeRef.current) setTimeout(() => { startListening(); }, 300); };
+             utterance.onerror = (e) => { console.error('TTS Error', e); if (handsFreeModeRef.current) setTimeout(() => { startListening(); }, 300); };
              window.speechSynthesis.speak(utterance);
           } else {
                if (audioPlayerRef.current) {
-                  audioPlayerRef.current.onFinished = () => { setTimeout(() => { startListening(); }, 500); };
+                  audioPlayerRef.current.onFinished = () => { if (handsFreeModeRef.current) setTimeout(() => { startListening(); }, 300); };
                }
             }
           setChatHistory(prev => {
@@ -367,6 +373,18 @@ export default function AmbulanceDashboard() {
       silenceTimerRef.current = setTimeout(() => sendQuery(fullText), 1500); 
     }
   }, [transcript, interimTranscript, isListening, socket, isProcessing]);
+
+  const toggleHandsFreeMode = () => {
+    const next = !handsFreeMode;
+    setHandsFreeMode(next);
+    if (next && !isListening && isConnected) {
+      audioCtx.current?.resume();
+      audioPlayerRef.current?.init();
+      startListening();
+    } else if (!next) {
+      stopListening();
+    }
+  };
 
   const handleStartListening = () => { if (isListening) { handleStopAndSend(); } else { audioCtx.current?.resume(); audioPlayerRef.current?.init(); startListening(); } };
   useEffect(() => {
@@ -602,7 +620,12 @@ export default function AmbulanceDashboard() {
             </div>
           )}
 
-          <div className="h-20">
+          <div className="flex items-center gap-3 mb-2">
+            <button onClick={toggleHandsFreeMode} className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold tracking-widest border transition-all ${ handsFreeMode ? 'bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-white/5 border-white/20 text-neutral-400 hover:border-white/40' }`}>
+              {handsFreeMode ? '🎙️ HANDS-FREE: ON — TAP TO DEACTIVATE' : '🎙️ ACTIVATE HANDS-FREE MODE'}
+            </button>
+          </div>
+          <div className={`h-20 ${handsFreeMode ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-black rounded-xl shadow-[0_0_25px_rgba(34,197,94,0.5)]' : ''}`}>
             {!isConnected ? (
               <div className="w-full h-full flex items-center justify-center gap-3 bg-red-900/30 border border-red-500 text-red-400 rounded-xl font-bold text-sm font-mono shadow-[0_0_15px_rgba(239,68,68,0.2)]">
                 📡 OFFLINE — DEAD RECKONING ACTIVE — Voice Guardrails Running Locally
