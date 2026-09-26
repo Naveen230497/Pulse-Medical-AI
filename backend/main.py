@@ -358,7 +358,7 @@ async def stream_ai_to_cartesia(
         ) as cartesia_ws:
             await cartesia_ws.send(json.dumps({
                 "context_id": cartesia_context_id,
-                "model_id": "sonic-multilingual",
+                "model_id": "sonic-3.6",
                 "voice": {"mode": "id", "id": voice_id},
                 "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": 24000}
             }))
@@ -400,6 +400,9 @@ async def stream_ai_to_cartesia(
                     try:
                         res = await asyncio.wait_for(cartesia_ws.recv(), timeout=5.0)
                         data = json.loads(res)
+                        if data.get("error"):
+                            logging.error(f"Cartesia Error: {data['error']}")
+                            break
                         if data.get("done", False):
                             break
                         if "data" in data:
