@@ -362,26 +362,38 @@ async def stream_ai_to_cartesia(
                 nonlocal full_ai_response
                 sentence_buffer = ""
                 first_token = True
-                async for chunk in stream:
-                    content = chunk.choices[0].delta.content
-                    if content:
-                        if first_token:
-                            e2e_ms = (time.time() - req_start) * 1000
-                            await frontend_ws.send_text(json.dumps({"type": "e2e_latency", "latency_ms": round(e2e_ms, 2), "model": ai_model}))
-                            first_token = False
-                        full_ai_response += content
-                        sentence_buffer += content
-                        await frontend_ws.send_text(json.dumps({"type": "text_chunk", "content": content}))
-                        if any(char in content for char in [".", "?", "!", ","]):
-                            await cartesia_ws.send(json.dumps({
-                                "context_id": cartesia_context_id,
-                                "model_id": "sonic-3.6",
-                                "voice": {"mode": "id", "id": voice_id},
-                                "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": 24000},
-                                "transcript": sentence_buffer,
-                                "continue": True
-                            }))
-                            sentence_buffer = ""
+                
+                try:
+                    iterator = stream.__aiter__()
+                    while True:
+                        import asyncio
+                        chunk = await asyncio.wait_for(iterator.__anext__(), timeout=2.5)
+                        content = chunk.choices[0].delta.content
+                        if content:
+                            if first_token:
+                                e2e_ms = (time.time() - req_start) * 1000
+                                await frontend_ws.send_text(json.dumps({"type": "e2e_latency", "latency_ms": round(e2e_ms, 2), "model": ai_model}))
+                                first_token = False
+                            
+                            full_ai_response += content
+                            sentence_buffer += content
+                            await frontend_ws.send_text(json.dumps({"type": "text_chunk", "content": content}))
+                            
+                            if any(char in content for char in [".", "?", "!", ","]):
+                                await cartesia_ws.send(json.dumps({
+                                    "context_id": cartesia_context_id,
+                                    "model_id": "sonic-3.6",
+                                    "voice": {"mode": "id", "id": voice_id},
+                                    "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": 24000},
+                                    "transcript": sentence_buffer,
+                                    "continue": True
+                                }))
+                                sentence_buffer = ""
+                except (asyncio.TimeoutError, StopAsyncIteration):
+                    pass
+                except Exception as e:
+                    import logging
+                    logging.error(f"LLM Stream broken: {e}")
                 final_chunk = sentence_buffer.strip()
                 await cartesia_ws.send(json.dumps({
                     "context_id": cartesia_context_id,
