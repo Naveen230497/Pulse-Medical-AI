@@ -356,12 +356,7 @@ async def stream_ai_to_cartesia(
         async with websockets.connect(
             f"wss://api.cartesia.ai/tts/websocket?api_key={CARTESIA_API_KEY}&cartesia_version=2024-06-10"
         ) as cartesia_ws:
-            await cartesia_ws.send(json.dumps({
-                "context_id": cartesia_context_id,
-                "model_id": "sonic-3.6",
-                "voice": {"mode": "id", "id": voice_id},
-                "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": 24000}
-            }))
+
 
             async def pump_tokens():
                 nonlocal full_ai_response
@@ -380,6 +375,9 @@ async def stream_ai_to_cartesia(
                         if any(char in content for char in [".", "?", "!", ","]):
                             await cartesia_ws.send(json.dumps({
                                 "context_id": cartesia_context_id,
+                                "model_id": "sonic-3.6",
+                                "voice": {"mode": "id", "id": voice_id},
+                                "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": 24000},
                                 "transcript": sentence_buffer,
                                 "continue": True
                             }))
@@ -387,7 +385,10 @@ async def stream_ai_to_cartesia(
                 final_chunk = sentence_buffer.strip()
                 await cartesia_ws.send(json.dumps({
                     "context_id": cartesia_context_id,
-                    "transcript": final_chunk if final_chunk else "",
+                    "model_id": "sonic-3.6",
+                    "voice": {"mode": "id", "id": voice_id},
+                    "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": 24000},
+                    "transcript": final_chunk if final_chunk else " ",
                     "continue": False
                 }))
                 if moss_session:
