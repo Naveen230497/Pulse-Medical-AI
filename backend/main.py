@@ -314,29 +314,7 @@ async def stream_ai_to_cartesia(
 
     full_ai_response = ""
     try:
-        # Indian language path — use browser TTS, no Cartesia
-        if lang.startswith("hi") or lang.startswith("te"):
-            stream = await llm_client.chat.completions.create(
-                messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_content}],
-                model=ai_model, temperature=0.3, max_tokens=300, stream=True
-            )
-            first_token = True
-            async for chunk in stream:
-                content = chunk.choices[0].delta.content
-                if content:
-                    if first_token:
-                        e2e_ms = (time.time() - req_start) * 1000
-                        await frontend_ws.send_text(json.dumps({"type": "e2e_latency", "latency_ms": round(e2e_ms, 2), "model": ai_model}))
-                        first_token = False
-                    full_ai_response += content
-                    await frontend_ws.send_text(json.dumps({"type": "text_chunk", "content": content}))
-            if moss_session:
-                await moss_session.add_docs([
-                    DocumentInfo(id=f"ai-{int(time.time()*1000)}", text=f"AI: {full_ai_response}")
-                ])
-            return full_ai_response
-
-        # English path — stream to Cartesia TTS
+        # All languages path — stream to Cartesia TTS
         stream = await llm_client.chat.completions.create(
             messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_content}],
             model=ai_model, temperature=0.3, max_tokens=300, stream=True
@@ -386,6 +364,7 @@ async def stream_ai_to_cartesia(
                                     "voice": {"mode": "id", "id": voice_id},
                                     "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": 24000},
                                     "transcript": sentence_buffer,
+                                    "language": lang.split("-")[0].lower() if lang else "en",
                                     "continue": True
                                 }))
                                 sentence_buffer = ""
@@ -401,6 +380,7 @@ async def stream_ai_to_cartesia(
                     "voice": {"mode": "id", "id": voice_id},
                     "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": 24000},
                     "transcript": final_chunk if final_chunk else " ",
+                    "language": lang.split("-")[0].lower() if lang else "en",
                     "continue": False
                 }))
                 if moss_session:
