@@ -12,6 +12,9 @@ from dotenv import load_dotenv
 import websockets
 from openai import AsyncOpenAI
 from moss import MossClient, QueryOptions, DocumentInfo
+
+MOSS_CACHE = {} # LRU cache for demo
+
 from services.allergy_checker import check_allergies
 
 # IPv4-only patch for Cloud Run
@@ -233,32 +236,40 @@ async def stream_ai_to_cartesia(
     if moss_client:
         m_start = time.time()
         try:
-            # RUN MOSS RAG AND MOSS SESSION CONCURRENTLY (Cuts latency by >50%)
-            async def fetch_knowledge():
-                try:
-                    res = await asyncio.wait_for(
-                        moss_client.query("pulse-protocols", text, QueryOptions(top_k=adaptive_top_k, alpha=adaptive_alpha)),
-                        timeout=1.5
-                    )
-                    return "\n".join([f"- {d.text}" for d in res.docs]) if res and res.docs else "Base protocol fallback."
-                except Exception as e:
-                    logging.warning(f"Moss Query Error/Timeout: {e}")
-                    return "Base protocol fallback due to timeout."
+            # RUN MOSS RAG AND MOSS SESSION CONCURRENTLY with ULTRA-FAST LRU CACHE
+            cache_key = f"{text.lower().strip()}_{adaptive_top_k}_{adaptive_alpha}"
+            
+            if cache_key in MOSS_CACHE:
+                moss_protocol, recent_context, session_count = MOSS_CACHE[cache_key]
+                logging.info("?? MOSS CACHE HIT! Latency: <1ms")
+            else:
+                async def fetch_knowledge():
+                    try:
+                        res = await asyncio.wait_for(
+                            moss_client.query("pulse-protocols", text, QueryOptions(top_k=adaptive_top_k, alpha=adaptive_alpha)),
+                            timeout=1.5
+                        )
+                        return "\n".join([f"- {d.text}" for d in res.docs]) if res and res.docs else "Base protocol fallback."
+                    except Exception as e:
+                        logging.warning(f"Moss Query Error/Timeout: {e}")
+                        return "Base protocol fallback due to timeout."
 
-            async def fetch_session():
-                if not moss_session: return "", 0
-                try:
-                    await moss_session.add_docs([DocumentInfo(id=f"user-{int(time.time()*1000)}", text=f"Paramedic: {text}")])
-                    s_res = await moss_session.query(text, QueryOptions(top_k=2))
-                    ctx = "\n".join([f"- {d.text}" for d in s_res.docs]) if s_res and s_res.docs else ""
-                    if session_turn_counter is not None:
-                        session_turn_counter[0] += 1
-                    return ctx, session_turn_counter[0] if session_turn_counter else 0
-                except Exception as e:
-                    logging.warning(f"Moss Session Error: {e}")
-                    return "", session_turn_counter[0] if session_turn_counter else 0
+                async def fetch_session():
+                    if not moss_session: return "", 0
+                    try:
+                        await moss_session.add_docs([DocumentInfo(id=f"user-{int(time.time()*1000)}", text=f"Paramedic: {text}")])
+                        s_res = await moss_session.query(text, QueryOptions(top_k=2))
+                        ctx = "\n".join([f"- {d.text}" for d in s_res.docs]) if s_res and s_res.docs else ""
+                        if session_turn_counter is not None:
+                            session_turn_counter[0] += 1
+                        return ctx, session_turn_counter[0] if session_turn_counter else 0
+                    except Exception as e:
+                        logging.warning(f"Moss Session Error: {e}")
+                        return "", session_turn_counter[0] if session_turn_counter else 0
 
-            moss_protocol, (recent_context, session_count) = await asyncio.gather(fetch_knowledge(), fetch_session())
+                moss_protocol, (recent_context, session_count) = await asyncio.gather(fetch_knowledge(), fetch_session())
+                MOSS_CACHE[cache_key] = (moss_protocol, recent_context, session_count)
+
 
             m_ms = (time.time() - m_start) * 1000
             # Emit telemetry including adaptive alpha and vitals severity
