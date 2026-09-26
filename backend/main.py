@@ -345,7 +345,7 @@ async def stream_ai_to_cartesia(
                     iterator = stream.__aiter__()
                     while True:
                         import asyncio
-                        chunk = await asyncio.wait_for(iterator.__anext__(), timeout=2.5)
+                        chunk = await asyncio.wait_for(iterator.__anext__(), timeout=15.0)
                         content = chunk.choices[0].delta.content
                         if content:
                             if first_token:
@@ -478,7 +478,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                 _text, websocket, _vitals, _profile, _lang,
                                 moss_session, _persona, _req_start, session_turn_counter
                             ),
-                            timeout=20.0
+                            timeout=60.0
                         )
                         await websocket.send_text(json.dumps({"type": "end_response", "full_text": f_text}))
                     except asyncio.CancelledError:
